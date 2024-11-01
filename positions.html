@@ -45,12 +45,12 @@
             </thead>
             <tbody>
               <tr ng-repeat="department in departments">
-                <td>{{ department.id }}</td>
+                <td>{{ department.departmentID.id }}</td>
                 <td ng-dblclick="editDepartment(department, 'name')">
                   <input type="text" ng-model="department.name"
                     ng-show="department.isEditing && department.editingField === 'name'"
                     ng-blur="saveDepartment(department)" ng-keyup="checkEnter($event, department)" />
-                  <span ng-hide="department.isEditing && department.editingField === 'name'">{{ department.name }}</span>
+                  <span ng-hide="department.isEditing && department.editingField === 'name'">{{ department.departmentID.departmentName }}</span>
                 </td>
                 <td>
                   <div class="form-check form-switch">
@@ -121,12 +121,4 @@
       </div>
     </div>
   </div>
-
-  <script>
-    $(document).ready(function () {
-      // Khởi tạo DataTable và gán vào biến
-      var phongBanTable = $('#phongBanTable').DataTable();
-      var chucVuTable = $('#chucVuTable').DataTable();
-    })
-  </script>
 </main>
