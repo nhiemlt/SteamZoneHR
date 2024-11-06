@@ -1,0 +1,61 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #e6e6e6;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.login-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    /* Để cho chiều cao của các phần tử đồng đều */
+    max-width: 900px;
+    width: 100%;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+.bg-image {
+    flex: 1;
+    background-image: url('../images/login.png');
+    background-size: cover;
+    background-position: center;
+    min-height: 400px;
+    /* Chiều cao tối thiểu cho hình ảnh */
+    margin: 1.5rem;
+}
+
+.login-form {
+    flex: 1;
+    padding: 1.5rem;
+}
+
+#logo {
+    width: 15rem;
+    display: block;
+    margin: 1rem auto;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        margin: 20px;
+        border-radius: 20px;
+    }
+
+    .bg-image {
+        min-height: 0px;
+    }
+
+    .login-form {
+        padding: 1rem 2rem;
+        /* Giảm padding trên màn hình nhỏ */
+    }
+}
