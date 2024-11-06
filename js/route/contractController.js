@@ -1,135 +1,156 @@
-app.controller('contractController', function($scope, $http) {
-    // Khởi tạo dữ liệu mẫu cho hợp đồng
-    $scope.contracts = [
-      { id: 1, employeeID: { fullName: "Nguyễn Văn A", avatar: "path/to/avatar1.jpg" }, startDate: "2020-01-01", endDate: "2025-01-01", signingDate: "2019-12-31", agreedSalary: 20000000, confirmerID: { fullName: "Nguyễn Văn B", avatar: "path/to/avatar2.jpg" }, isActive: true },
-      { id: 2, employeeID: { fullName: "Trần Thị B", avatar: "path/to/avatar3.jpg" }, startDate: "2021-03-15", endDate: "2023-03-15", signingDate: "2021-03-10", agreedSalary: 15000000, confirmerID: { fullName: "Trần Văn C", avatar: "path/to/avatar4.jpg" }, isActive: false },
-      { id: 3, employeeID: { fullName: "Lê Văn C", avatar: "path/to/avatar5.jpg" }, startDate: "2022-06-01", endDate: "2022-12-01", signingDate: "2022-05-30", agreedSalary: 10000000, confirmerID: { fullName: "Lê Thị D", avatar: "path/to/avatar6.jpg" }, isActive: true }
-    ];
-  
-    // Dữ liệu mẫu cho nhân viên và người xác nhận
-    $scope.employees = [
-      { fullName: "Nguyễn Văn A", avatar: "path/to/avatar1.jpg" },
-      { fullName: "Trần Thị B", avatar: "path/to/avatar2.jpg" },
-      { fullName: "Lê Văn C", avatar: "path/to/avatar3.jpg" }
-    ];
-  
-    $scope.confirmers = [
-      { fullName: "Nguyễn Văn B", avatar: "path/to/avatar2.jpg" },
-      { fullName: "Trần Văn C", avatar: "path/to/avatar4.jpg" },
-      { fullName: "Lê Thị D", avatar: "path/to/avatar6.jpg" }
-    ];
-  
-    $scope.selectedContract = {};
-    $scope.newContract = {};
-    $scope.searchQuery = ''; // Biến chứa truy vấn tìm kiếm
-    $scope.filteredContracts = []; // Danh sách hợp đồng sau khi tìm kiếm
-    $scope.noResult = false; // Biến kiểm tra có kết quả tìm kiếm hay không
-    $scope.searchEmployeeQuery = ''; // Biến chứa truy vấn tìm kiếm nhân viên
-    $scope.filteredEmployees = []; // Danh sách nhân viên sau khi tìm kiếm
-    $scope.searchConfirmerQuery = ''; // Biến chứa truy vấn tìm kiếm người xác nhận
-    $scope.filteredConfirmers = []; // Danh sách người xác nhận sau khi tìm kiếm
-  
-    // Mở modal thêm hợp đồng
-    $scope.openAddModal = function () {
-      $scope.newContract = {}; // Khởi tạo lại thông tin hợp đồng mới
-      $('#addModal').modal('show');
-    };
-  
-    // Thêm hợp đồng
-    $scope.addContract = function () {
-      $scope.newContract.id = $scope.contracts.length + 1; // Tạo ID mới cho hợp đồng
-      $scope.contracts.push(angular.copy($scope.newContract)); // Thêm hợp đồng vào danh sách
-      $('#addModal').modal('hide'); // Đóng modal
-    };
-  
-    // Mở modal cập nhật hợp đồng
-    $scope.openUpdateModal = function (contract) {
-      $scope.selectedContract = angular.copy(contract); // Sao chép thông tin hợp đồng đã chọn
-      $('#updateModal').modal('show'); // Mở modal cập nhật
-    };
-  
-    // Cập nhật hợp đồng
-    $scope.updateContract = function () {
-      var contractIndex = $scope.contracts.findIndex(c => c.id === $scope.selectedContract.id); // Tìm chỉ số hợp đồng cần cập nhật
-      if (contractIndex !== -1) {
-        $scope.contracts[contractIndex] = angular.copy($scope.selectedContract); // Cập nhật thông tin hợp đồng
-        $('#updateModal').modal('hide'); // Đóng modal
-      }
-    };
-  
-    // Toggle trạng thái hợp đồng
-    $scope.toggleStatus = function (contract) {
-      contract.isActive = !contract.isActive; // Chuyển đổi trạng thái kích hoạt
-    };
-  
-    // Tìm kiếm hợp đồng
-    $scope.searchContracts = function () {
-      $scope.filteredContracts = [];
-      $scope.noResult = false;
-  
-      if (!$scope.searchQuery) return;
-  
-      let count = 0;
-      $scope.contracts.forEach(function (contract) {
-        // Kiểm tra nếu tên nhân viên trong hợp đồng chứa truy vấn tìm kiếm
-        if (contract.employeeID.fullName.toUpperCase().includes($scope.searchQuery.toUpperCase()) && count < 5) {
-          $scope.filteredContracts.push(contract);
-          count++;
+app.controller('contractController', function ($scope, $http) {
+  const domain = 'http://localhost:8080';
+  const baseUrl = domain + '/api/contracts';
+
+  // Khởi tạo controller
+  $scope.init = function () {
+    $scope.getAllContracts(); // Lấy danh sách hợp đồng để hiển thị trong modal
+    $scope.newContract = {}; // Biến lưu thông tin hợp đồng mới
+    $scope.selectedContract = {}; // Biến lưu thông tin hợp đồng khi cập nhật
+    $scope.departments = {}; // Lưu thông tin phòng ban
+    $scope.positions = {}; // Lưu thông tin chức vụ
+  };
+
+  $scope.searchEmployeeQuery;
+
+  // Mở modal thêm hợp đồng
+  $scope.openAddContractModal = () => {
+    $scope.newContract = {}; // Reset dữ liệu cho hợp đồng mới
+    $('#addContractModal').modal('show'); // Hiển thị modal thêm hợp đồng
+  };
+
+  // Hàm mở modal cập nhật hợp đồng
+  $scope.openUpdateContractModal = function (contract) {
+    // Sao chép dữ liệu hợp đồng để tránh thay đổi trực tiếp lên dữ liệu gốc
+    $scope.selectedContract = angular.copy(contract);
+    console.log($scope.selectedContract)
+    $('#updateContractModal').modal('show');
+  };
+
+  // Hàm đóng modal cập nhật hợp đồng
+  $scope.closeUpdateContractModal = function () {
+    // Đóng modal (bằng cách sử dụng Bootstrap modal API hoặc thao tác DOM nếu cần)
+    $('#updateContractModal').modal('hide');
+  };
+
+  // Hàm đóng modal thêm hợp đồng
+  $scope.closeAddContractModal = function () {
+    $('#addContractModal').modal('hide');
+  };
+
+  // Lấy danh sách hợp đồng
+  $scope.getAllContracts = function () {
+    $http.get(baseUrl + '/getAll')
+      .then(function (response) {
+        $scope.contracts = response.data.map(contract => {
+          contract.signingDate = new Date(contract.signingDate);
+          contract.endDate = new Date(contract.endDate);
+          contract.startDate = new Date(contract.startDate);
+          return contract;
+        });
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.error("Error fetching contracts:", error);
+      });
+  };
+
+  // Mở modal thêm hợp đồng
+  $scope.openAddContractModal = () => {
+    $scope.newContract = {}; // Reset dữ liệu cho hợp đồng mới
+    $('#addContractModal').modal('show'); // Hiển thị modal thêm hợp đồng
+  };
+
+  // Mở modal cập nhật hợp đồng
+  $scope.openUpdateContractModal = (contract) => {
+    $scope.selectedContract = angular.copy(contract); // Sao chép dữ liệu hợp đồng để cập nhật
+    console.log($scope.selectedContract); // Kiểm tra thông tin hợp đồng đã chọn
+    $('#updateContractModal').modal('show'); // Hiển thị modal cập nhật hợp đồng
+  };
+
+  // Tạo hợp đồng mới
+  $scope.createContract = function (contractData) {
+    $http.post(baseUrl + '/postContracts', contractData)
+      .then(function (response) {
+        console.log("Contract created successfully:", response.data);
+        $scope.getAllContracts(); // Refresh danh sách hợp đồng sau khi tạo mới
+        $scope.closeAddModal(); // Đóng modal sau khi thêm
+      })
+      .catch(function (error) {
+        console.error("Error creating contract:", error);
+        $scope.validationErrors = error.data;
+      });
+  };
+
+  // Hàm để thêm hợp đồng mới
+$scope.addContract = function () {
+  // Gọi hàm createContract từ controller để gửi dữ liệu hợp đồng
+  $scope.createContract($scope.newContract);
+};
+
+  // Cập nhật hợp đồng
+  $scope.updateContract = function () {
+    $http.put(baseUrl + '/updateContract/' + $scope.selectedContract.id, $scope.selectedContract)
+      .then(function (response) {
+        console.log("Contract updated successfully:", response.data);
+        $scope.getAllContracts(); // Refresh danh sách hợp đồng sau khi cập nhật
+        $scope.closeUpdateModal(); // Đóng modal sau khi cập nhật
+      })
+      .catch(function (error) {
+        console.error("Error updating contract:", error);
+      });
+  };
+
+  // Gửi email thông báo
+  $scope.sendEmailToEmployee = function (email) {
+    const requestData = { email: email };
+    $http.post(baseUrl + '/sendEmail', requestData)
+      .then(function (response) {
+        console.log(response.data.message);
+      })
+      .catch(function (error) {
+        console.error("Error sending email:", error);
+      });
+  };
+
+  // Cập nhật mật khẩu thông qua token
+  $scope.updatePassword = function (token) {
+    $http.get(baseUrl + '/updatePassword', { params: { token: token } })
+      .then(function (response) {
+        $scope.passwordUpdateMessage = response.data;
+      })
+      .catch(function (error) {
+        console.error("Error updating password:", error);
+        if (error.status === 401) {
+          $scope.passwordUpdateMessage = "Token has expired";
         }
       });
-  
-      if ($scope.filteredContracts.length === 0) {
-        $scope.noResult = true; // Nếu không có kết quả tìm kiếm
-      }
-    };
-  
-    // Hàm xóa kết quả tìm kiếm
-    $scope.clearSearchResults = function () {
-      $scope.filteredContracts = [];
-      $scope.noResult = false;
-      $scope.searchQuery = ''; // Reset truy vấn tìm kiếm
-    };
-  
-    // Tìm kiếm nhân viên
-    $scope.searchEmployees = function () {
-      $scope.filteredEmployees = [];
-      if (!$scope.searchEmployeeQuery) return;
-  
-      let count = 0;
-      $scope.employees.forEach(function (employee) {
-        if (employee.fullName.toUpperCase().includes($scope.searchEmployeeQuery.toUpperCase()) && count < 5) {
-          $scope.filteredEmployees.push(employee);
-          count++;
-        }
+  };
+
+  // Lấy thống kê điểm danh
+  $scope.getAttendanceStatistics = function (startDate, endDate) {
+    const requestData = { startDate: startDate, endDate: endDate };
+    $http.get(baseUrl + '/getAttendanceStatistics', { data: requestData })
+      .then(function (response) {
+        $scope.attendanceStatistics = response.data;
+      })
+      .catch(function (error) {
+        console.error("Error fetching attendance statistics:", error);
       });
-    };
-  
-    // Tìm kiếm người xác nhận
-    $scope.searchConfirmers = function () {
-      $scope.filteredConfirmers = [];
-      if (!$scope.searchConfirmerQuery) return;
-  
-      let count = 0;
-      $scope.confirmers.forEach(function (confirmer) {
-        if (confirmer.fullName.toUpperCase().includes($scope.searchConfirmerQuery.toUpperCase()) && count < 5) {
-          $scope.filteredConfirmers.push(confirmer);
-          count++;
-        }
+  };
+
+  // Lấy tổng lương của nhân viên
+  $scope.getEmployeeTotalAmount = function () {
+    $http.get(baseUrl + '/getEmployeeTotalAmount')
+      .then(function (response) {
+        $scope.employeeTotalAmount = response.data;
+      })
+      .catch(function (error) {
+        console.error("Error fetching employee total amount:", error);
       });
-    };
-  
-    // Chọn nhân viên từ danh sách tìm kiếm
-    $scope.selectEmployee = function(employee) {
-      $scope.newContract.employeeID = employee; // Gán thông tin nhân viên được chọn
-      $scope.searchEmployeeQuery = ''; // Reset trường tìm kiếm
-      $scope.filteredEmployees = []; // Xóa danh sách nhân viên tìm kiếm
-    };
-  
-    // Chọn người xác nhận từ danh sách tìm kiếm
-    $scope.selectConfirmer = function(confirmer) {
-      $scope.newContract.confirmerID = confirmer; // Gán thông tin người xác nhận được chọn
-      $scope.searchConfirmerQuery = ''; // Reset trường tìm kiếm
-      $scope.filteredConfirmers = []; // Xóa danh sách người xác nhận tìm kiếm
-    };
-  });
-  
+  };
+
+  // Gọi hàm để lấy danh sách hợp đồng khi controller được khởi tạo
+  $scope.getAllContracts();
+
+});
