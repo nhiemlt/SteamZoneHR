@@ -23,14 +23,8 @@
   <!-- jQuery (make sure jQuery is loaded before other scripts) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
 
-  <!-- DataTables (if you are using DataTables plugin) -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.2/css/dataTables.dataTables.css" />
-  <script src="https://cdn.datatables.net/2.1.2/js/dataTables.js"></script>
-
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
-
-  <link href="./css/datatables.css" rel="stylesheet">
 
   <link rel="stylesheet" href="./css/custom.css">
 </head>
@@ -49,7 +43,7 @@
       <li class="dropdown"><a class="app-nav__item" href="#" data-bs-toggle="dropdown" aria-label="Open Profile Menu"><i
             class="bi bi-person fs-4"></i></a>
         <ul class="dropdown-menu settings-menu dropdown-menu-right">
-          <li style="cursor: pointer;"><a class="dropdown-item" onclick="window.location.href='../login.html'"><i
+          <li style="cursor: pointer;"><a class="dropdown-item" onclick="logout()"><i
                 class="bi bi-box-arrow-right me-2 fs-5"></i> Logout</a></li>
         </ul>
       </li>
@@ -129,7 +123,44 @@
 <!-- Thêm vào phần <head> hoặc trước khi bạn tải script AngularJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var userSession = JSON.parse(sessionStorage.getItem('userSession')); // Lấy thông tin người dùng từ sessionStorage
+        if (!userSession) {
+            // Nếu không có thông tin đăng nhập hợp lệ, chuyển hướng đến trang đăng nhập
+            window.location.href = 'login.html';
+        }
+    });
+
+    function logout() {
+        // Xóa tất cả cookies (bao gồm cookie lưu trữ username và password)
+        document.cookie.split(";").forEach(function(c) {
+            document.cookie = c.trim().replace(/^.+/, "") + ";expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+        });
+
+        // Xóa riêng cookie của username và password (nếu có)
+        deleteCookie('username');
+        deleteCookie('password');
+
+        // Xóa token trong localStorage và sessionStorage
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+
+        // Xóa tất cả sessionStorage và localStorage (nếu có dữ liệu khác)
+        sessionStorage.clear();
+        localStorage.clear();
+
+        // Chuyển hướng người dùng về trang đăng nhập
+        window.location.href = '../login.html';
+    }
+
+    // Hàm xóa cookie
+    function deleteCookie(name) {
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+    }
+</script>
+
+
   <!-- Google analytics script-->
   <script type="text/javascript">
     if (document.location.hostname == 'pratikborsadiya.in') {
