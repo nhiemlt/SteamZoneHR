@@ -21,7 +21,6 @@
                   <th>Tên nhân viên</th>
                   <th>Chức vụ</th>
                   <th>Phòng ban</th>
-                  <th>Ngày nhận lương</th>
                   <th>Lương cơ bản</th>
                   <th>Tổng phụ cấp</th>
                   <th>Tiền làm thêm</th>
@@ -31,15 +30,14 @@
               <tbody>
                 <tr ng-repeat="employee in employees">
                   <td>{{$index + 1}}</td>
-                  <td>{{employee.name}}</td>
-                  <td>{{employee.position}}</td>
-                  <td>{{employee.department}}</td>
-                  <td>{{employee.salaryDate | date:'dd/MM/yyyy'}}</td>
-                  <td>{{ employee.baseSalary | number:0 }} ₫</td>
-                  <td>{{ employee.allowance | number:0 }} ₫</td>
-                  <td>{{ employee.overtimePay | number:0 }} ₫</td>
-                  <td>{{ employee.totalSalary | number:0 }} ₫</td>
-                </tr>
+                  <td>{{employee.fullName}}</td>
+                  <td>{{employee.positionName}}</td>
+                  <td>{{employee.departmentName}}</td>
+                  <td>{{ employee.agreedSalary | number:0 }} ₫</td>
+                  <td>{{ employee.totalAllowance | number:0 }}</td>
+                  <td>{{ employee.hourlyRate | number:0 }} ₫</td>
+                  <td>{{ (employee.totalSalary) | number:0 }} ₫</td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -49,8 +47,5 @@
   </div>
 </main>
 <script>
-  $(document).ready(function () {
-    $('#salary-statistics').DataTable();
-  });
-
+ 
 </script>

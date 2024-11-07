@@ -17,36 +17,24 @@
             <div class="col-md-2 mb-3">
               <label class="form-label">Chế độ xem</label>
               <select class="form-select" aria-label="Chọn chế độ" ng-model="viewMode" ng-change="toggleMonthSelect()">
+                <option value="" disabled selected>Chọn chế độ</option>
                 <option value="month">Tháng</option>
                 <option value="year">Năm</option>
-              </select>
+            </select>
             </div>
 
             <div class="col-md-2 mb-3">
               <label class="form-label">Năm</label>
-              <select class="form-select" aria-label="Chọn năm">
-                <option selected>2024</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-                <option value="2021">2021</option>
+              <select class="form-select" ng-model="selectedYear" ng-change="fetchAttendanceData(selectedMonth, selectedYear)" aria-label="Chọn năm">
+                <option ng-repeat="year in years" ng-value="year">{{ year }}</option>
               </select>
+             
             </div>
 
             <div class="col-md-2 mb-3" ng-show="viewMode === 'month'">
               <label class="form-label">Tháng</label>
-              <select class="form-select" aria-label="Chọn tháng">
-                <option selected>Tháng 1</option>
-                <option value="02">Tháng 2</option>
-                <option value="03">Tháng 3</option>
-                <option value="04">Tháng 4</option>
-                <option value="05">Tháng 5</option>
-                <option value="06">Tháng 6</option>
-                <option value="07">Tháng 7</option>
-                <option value="08">Tháng 8</option>
-                <option value="09">Tháng 9</option>
-                <option value="10">Tháng 10</option>
-                <option value="11">Tháng 11</option>
-                <option value="12">Tháng 12</option>
+              <select class="form-select" ng-model="selectedMonth" ng-change="fetchAttendanceData(selectedMonth, selectedYear)" aria-label="Chọn tháng">
+                <option ng-repeat="month in months" ng-value="month.value">{{ month.label }}</option>
               </select>
             </div>
           </div>
@@ -66,15 +54,15 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="employee in employees">
-                  <td>{{$index + 1}}</td>
-                  <td>{{employee.name}}</td>
-                  <td>{{employee.position}}</td>
-                  <td>{{employee.department}}</td>
-                  <td>{{employee.lateDays}}</td>
-                  <td>{{employee.absentDays}}</td>
+                <tr ng-repeat="employee in getPaginatedEmployees()">
+                  <td>{{$index + 1 + (currentPage - 1) * itemsPerPage}}</td>
+                  <td>{{employee.fullName}}</td>
+                  <td>{{employee.positionName}}</td>
+                  <td>{{employee.departmentName}}</td>
+                  <td>{{employee.totalLateDays}}</td>
+                  <td>{{employee.daysAbsent}}</td>
                   <td>{{employee.overtimeHours}}</td>
-                  <td>{{employee.totalDays}}</td>
+                  <td>{{employee.totalOnTimeDays}}</td>
                 </tr>
               </tbody>
             </table>
@@ -82,5 +70,18 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="pagination">
+    <ul class="pagination">
+      <li class="page-item" ng-class="{disabled: currentPage === 1}">
+        <a class="page-link" ng-click="goToPage(currentPage - 1)">«</a>
+      </li>
+      <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index" ng-class="{active: currentPage === $index + 1}">
+        <a class="page-link" ng-click="goToPage($index + 1)">{{ $index + 1 }}</a>
+      </li>
+      <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+        <a class="page-link" ng-click="goToPage(currentPage + 1)">»</a>
+      </li>
+    </ul>
   </div>
 </main>
