@@ -13,13 +13,18 @@
     <div class="col-12">
       <div class="tile">
         <div class="tile-body">
-          <!-- Button thêm hợp đồng -->
-          <div class="d-flex justify-content-end">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Input tìm kiếm -->
+            <div class="col-auto">
+              <input type="text" class="form-control" style="width: 200px;" placeholder="Tìm kiếm theo tên nhân viên" ng-model="searchEmployeeName">
+            </div>
+          
+            <!-- Button thêm hợp đồng -->
             <button class="btn btn-outline-primary col-auto" ng-click="openAddModal()">Thêm hợp đồng</button>
           </div>
           <!-- Table contracts -->
-          <div class="table-responsive">
-            <table class="table table-hover table-bordered table-sm" id="contracts">
+          <div class="table-responsive mt-4" style="max-height: 500px; overflow-y: auto;">
+            <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="contracts">
               <thead>
                 <tr>
                   <th scope="col">STT</th>
@@ -30,165 +35,98 @@
                   <th scope="col">Mức lương</th>
                   <th scope="col">Người xác nhận</th>
                   <th scope="col">Kích hoạt</th>
-                  <th scope="col">Hành động</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="contract in contracts">
+                <tr ng-repeat="contract in contracts | orderBy:'-id' | filter: { employeeID: { fullName: searchEmployeeName } }">
                   <td>{{$index + 1}}</td>
                   <td>{{contract.employeeID.fullName}}</td>
                   <td>{{contract.startDate | date:'dd/MM/yyyy'}}</td>
                   <td>{{contract.endDate | date:'dd/MM/yyyy'}}</td>
                   <td>{{contract.signingDate | date:'dd/MM/yyyy'}}</td>
-                  <td>{{contract.agreedSalary | currency}}</td>
+                  <td>{{contract.agreedSalary | number:0 }} ₫</td>
                   <td>{{contract.confirmerID.fullName}}</td>
                   <td>
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" ng-model="contract.isActive">
+                      <input class="form-check-input" type="checkbox" ng-model="contract.isActive" ng-change="updateContractActiveStatus(contract)">
                     </div>
-                  </td>
-                  <td>
-                    <button class="btn btn-primary btn-sm" ng-click="openUpdateModal(contract)">Cập nhật</button>
                   </td>
                 </tr>
               </tbody>
+              
             </table>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+
+  <!-- Modal Thêm Hợp Đồng -->
+  <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addModalLabel">Thêm hợp đồng</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form thêm hợp đồng -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="new_employee" class="form-label">Nhân viên</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="new_employee" ng-model="searchEmployeeQuery"
+                  ng-keyup="searchEmployees()" autocomplete="off">
+                <ul class="list-group position-absolute w-100 mt-5" ng-if="searchEmployeeQuery.length > 0">
+                  <li class="list-group-item d-flex align-items-center"
+                    ng-repeat="employee in filteredEmployees | limitTo: 5" ng-click="selectEmployee(employee)"
+                    style="cursor: pointer;">
+                    <img ng-src="{{employee.avatar}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                    <span>{{employee.id}} - {{employee.fullName}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="new_confirmer" class="form-label">Người xác nhận</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="new_confirmer" ng-model="searchConfirmerQuery"
+                  ng-keyup="searchConfirmers()" autocomplete="off">
+                <ul class="list-group position-absolute w-100" ng-if="searchConfirmerQuery.length > 0">
+                  <li class="list-group-item d-flex align-items-center"
+                    ng-repeat="employee in filteredConfirmers | limitTo: 5" ng-click="selectConfirmer(employee)"
+                    style="cursor: pointer;">
+                    <img ng-src="{{employee.avatar}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                    <span>{{employee.id}} - {{employee.fullName}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="new_agreedSalary" class="form-label">Mức lương</label>
+              <input type="number" min="0" class="form-control" id="new_agreedSalary" ng-model="newContract.agreedSalary">
+            </div>
+            <div class="col-md-6">
+              <label for="new_signingDate" class="form-label">Ngày ký</label>
+              <input type="date" class="form-control" id="new_signingDate" ng-model="newContract.signingDate">
+            </div>
+            <div class="col-md-6">
+              <label for="new_startDate" class="form-label">Ngày bắt đầu</label>
+              <input type="date" class="form-control" id="new_startDate" ng-model="newContract.startDate">
+            </div>
+            <div class="col-md-6">
+              <label for="new_endDate" class="form-label">Ngày kết thúc</label>
+              <input type="date" class="form-control" id="new_endDate" ng-model="newContract.endDate">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-primary" ng-click="addContract()">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
-
-<!-- Modal Thêm Hợp Đồng -->
-<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addModalLabel">Thêm hợp đồng</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Form thêm hợp đồng -->
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="new_employee" class="form-label">Nhân viên</label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="new_employee" ng-model="searchEmployeeQuery" ng-keyup="searchEmployees()" autocomplete="off">
-              <ul class="list-group position-absolute w-100" ng-if="searchEmployeeQuery.length > 0">
-                <li class="list-group-item d-flex align-items-center" ng-repeat="employee in filteredEmployees | limitTo: 5" ng-click="selectEmployee(employee)" style="cursor: pointer;">
-                  <img ng-src="{{employee.avatar}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                  <span>{{employee.fullName}}</span>
-                </li>
-                <li class="list-group-item text-center" ng-if="!filteredEmployees.length">Không có kết quả</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="new_confirmer" class="form-label">Người xác nhận</label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="new_confirmer" ng-model="searchConfirmerQuery" ng-keyup="searchConfirmers()" autocomplete="off">
-              <ul class="list-group position-absolute w-100" ng-if="searchConfirmerQuery.length > 0">
-                <li class="list-group-item d-flex align-items-center" ng-repeat="employee in filteredConfirmers | limitTo: 5" ng-click="selectConfirmer(employee)" style="cursor: pointer;">
-                  <img ng-src="{{employee.avatar}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                  <span>{{employee.fullName}}</span>
-                </li>
-                <li class="list-group-item text-center" ng-if="!filteredConfirmers.length">Không có kết quả</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="new_agreedSalary" class="form-label">Mức lương</label>
-            <input type="number" class="form-control" id="new_agreedSalary" ng-model="newContract.agreedSalary">
-          </div>
-          <div class="col-md-6">
-            <label for="new_signingDate" class="form-label">Ngày ký</label>
-            <input type="date" class="form-control" id="new_signingDate" ng-model="newContract.signingDate">
-          </div>
-          <div class="col-md-6">
-            <label for="new_startDate" class="form-label">Ngày bắt đầu</label>
-            <input type="date" class="form-control" id="new_startDate" ng-model="newContract.startDate">
-          </div>
-          <div class="col-md-6">
-            <label for="new_endDate" class="form-label">Ngày kết thúc</label>
-            <input type="date" class="form-control" id="new_endDate" ng-model="newContract.endDate">
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-        <button type="button" class="btn btn-primary" ng-click="addContract()">Lưu</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Cập Nhật Hợp Đồng -->
-<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="updateModalLabel">Cập nhật hợp đồng</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Form cập nhật hợp đồng -->
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="update_employee" class="form-label">Nhân viên</label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="update_employee" ng-model="searchEmployeeQuery" ng-keyup="searchEmployees()" autocomplete="off">
-              <ul class="list-group position-absolute w-100" ng-if="searchEmployeeQuery.length > 0">
-                <li class="list-group-item d-flex align-items-center" ng-repeat="employee in filteredEmployees | limitTo: 5" ng-click="selectEmployee(employee)" style="cursor: pointer;">
-                  <img ng-src="{{employee.avatar}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                  <span>{{employee.fullName}}</span>
-                </li>
-                <li class="list-group-item text-center" ng-if="!filteredEmployees.length">Không có kết quả</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="update_confirmer" class="form-label">Người xác nhận</label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="update_confirmer" ng-model="searchConfirmerQuery" ng-keyup="searchConfirmers()" autocomplete="off">
-              <ul class="list-group position-absolute w-100" ng-if="searchConfirmerQuery.length > 0">
-                <li class="list-group-item d-flex align-items-center" ng-repeat="employee in filteredConfirmers | limitTo: 5" ng-click="selectConfirmer(employee)" style="cursor: pointer;">
-                  <img ng-src="{{employee.avatar}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                  <span>{{employee.fullName}}</span>
-                </li>
-                <li class="list-group-item text-center" ng-if="!filteredConfirmers.length">Không có kết quả</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="update_agreedSalary" class="form-label">Mức lương</label>
-            <input type="number" class="form-control" id="update_agreedSalary" ng-model="selectedContract.agreedSalary">
-          </div>
-          <div class="col-md-6">
-            <label for="update_signingDate" class="form-label">Ngày ký</label>
-            <input type="date" class="form-control" id="update_signingDate" ng-model="selectedContract.signingDate">
-          </div>
-          <div class="col-md-6">
-            <label for="update_startDate" class="form-label">Ngày bắt đầu</label>
-            <input type="date" class="form-control" id="update_startDate" ng-model="selectedContract.startDate">
-          </div>
-          <div class="col-md-6">
-            <label for="update_endDate" class="form-label">Ngày kết thúc</label>
-            <input type="date" class="form-control" id="update_endDate" ng-model="selectedContract.endDate">
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-        <button type="button" class="btn btn-primary" ng-click="updateContract()">Cập nhật</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<script>
-  $(document).ready(function() {
-    $('#contracts').DataTable();
-  });
-</script>
