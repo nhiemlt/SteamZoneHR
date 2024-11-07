@@ -47,7 +47,7 @@
                 <tr ng-repeat="employeeAllowance in employeeAllowances | filter:searchEmployee | limitTo:itemsPerPage:(employeeCurrentPage-1)*itemsPerPage">
                   <td>{{$index + 1}}</td>
                   <td>{{employeeAllowance.employeeID.fullName}}</td>
-                  <td>{{employeeAllowance.allowanceId.allowanceName}}</td>
+                  <td>{{employeeAllowance.allowanceID.allowanceName}}</td>
                   <td>{{employeeAllowance.startDate | date:'dd/MM/yyyy'}}</td>
                   <td>{{employeeAllowance.endDate | date: 'dd/MM/yyyy'}}</td>
                   <td>{{employeeAllowance.amount | currency: '' : 0}}</td>
@@ -238,7 +238,7 @@
               <div class="col-md-6 mb-3">
                 <label for="update_phucap" class="form-label">Phụ cấp</label>
                 <select class="form-select" id="update_phucap"
-                  ng-model="selectedEmployeeAllownace.allowanceId"
+                  ng-model="selectedEmployeeAllownace.allowanceID"
                   ng-options="allowance as allowance.allowanceName for allowance in allowances track by allowance.id"
                   ng-change="onAllowanceChange()">
                 </select>
@@ -345,3 +345,4 @@
       </div>
     </div>
   </main>
+  

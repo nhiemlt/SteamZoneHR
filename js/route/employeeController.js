@@ -6,7 +6,7 @@ app.controller('employeeController', function ($scope, $http) {
   $scope.employees = [];
   $scope.departments = [];
   $scope.positions = [];
-  $scope.newEmployee = {};
+  $scope.newEmployee = {};  
   $scope.selectedEmployee = {};
 
   // Hàm lấy danh sách nhân viên
