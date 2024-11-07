@@ -1,22 +1,64 @@
 app.controller('attendanceStatisticsController', function ($scope, $http) {
-  $scope.employees = [
-    { name: "Nguyễn Văn A", position: "Nhân viên", department: "Kế toán", lateDays: 2, absentDays: 1, overtimeHours: 5, totalDays: 22 },
-    { name: "Trần Thị B", position: "Trưởng phòng", department: "Nhân sự", lateDays: 1, absentDays: 2, overtimeHours: 8, totalDays: 20 },
-    { name: "Lê Văn C", position: "Nhân viên", department: "Kinh doanh", lateDays: 3, absentDays: 0, overtimeHours: 10, totalDays: 25 },
-    { name: "Phạm Thị D", position: "Quản lý", department: "Sản xuất", lateDays: 0, absentDays: 0, overtimeHours: 12, totalDays: 26 }
+  const currentDate = new Date();
+
+  $scope.months = [
+    { label: "Tháng 1", value: 1 },
+    { label: "Tháng 2", value: 2 },
+    { label: "Tháng 3", value: 3 },
+    { label: "Tháng 4", value: 4 },
+    { label: "Tháng 5", value: 5 },
+    { label: "Tháng 6", value: 6 },
+    { label: "Tháng 7", value: 7 },
+    { label: "Tháng 8", value: 8 },
+    { label: "Tháng 9", value: 9 },
+    { label: "Tháng 10", value: 10 },
+    { label: "Tháng 11", value: 11 },
+    { label: "Tháng 12", value: 12 }
   ];
 
-  $(document).ready(function () {
-    $('#attendance-statistics').DataTable();
-  });
+  // Danh sách năm (ví dụ: từ 2020 đến 2025)
+  $scope.years = [2020, 2021, 2022, 2023, 2024, 2025];
 
-  // Khởi tạo chế độ xem là 'month'
-  $scope.viewMode = 'month';
+  $scope.selectedMonth = null; 
+  $scope.selectedYear = currentDate.getFullYear();  
 
-  // Hàm để chuyển đổi chế độ xem
-  $scope.toggleMonthSelect = function () {
-    if ($scope.viewMode === 'year') {
-      $scope.selectedMonth = null; // Xóa chọn tháng khi chọn chế độ xem theo năm
-    }
+  // Biến cho phân trang
+  $scope.currentPage = 1;
+  $scope.itemsPerPage = 10; // Số bản ghi trên mỗi trang
+  $scope.employees = []; // Danh sách nhân viên
+  $scope.totalPages = 0; // Tổng số trang
+
+  // Hàm lấy dữ liệu chấm công
+  $scope.fetchAttendanceData = function (month, year) {
+      const apiUrl = 'http://localhost:8080/api/contracts/getAttendanceStatistics';
+      const config = {
+          params: { month: month, year: year }
+      };
+
+      $http.get(apiUrl, config)
+          .then(function (response) {
+              $scope.employees = response.data;
+              // Tính tổng số trang
+              $scope.totalPages = Math.ceil($scope.employees.length / $scope.itemsPerPage);
+              $scope.currentPage = 1; // Đặt lại trang hiện tại
+          })
+          .catch(function (error) {
+              console.error("Lỗi khi lấy dữ liệu chấm công:", error);
+          });
   };
+
+  // Hàm để lấy danh sách nhân viên theo trang hiện tại
+  $scope.getPaginatedEmployees = function() {
+      const start = ($scope.currentPage - 1) * $scope.itemsPerPage;
+      return $scope.employees.slice(start, start + $scope.itemsPerPage);
+  };
+
+  // Hàm chuyển trang
+  $scope.goToPage = function(page) {
+      if (page < 1 || page > $scope.totalPages) return;
+      $scope.currentPage = page;
+  };
+
+  // Gọi hàm fetchAttendanceData ngay khi controller được khởi động
+  $scope.fetchAttendanceData($scope.selectedMonth, $scope.selectedYear);
 });
