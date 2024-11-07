@@ -6,11 +6,20 @@ app.controller('employeeController', function ($scope, $http) {
 
   $scope.getEmployees = function () {
     $http.get(`${baseUrl}/getAll`)
-      .then(response => $scope.employees = response.data)
+      .then(response => {
+        $scope.employees = response.data
+          .map(employee => {
+            employee.birthDate = employee.birthDate ? new Date(employee.birthDate) : null;
+            return employee;
+          })
+          .sort((a, b) => b.id - a.id); // Sắp xếp giảm dần theo ID
+          $scope.filteredEmployees = $scope.employees;
+      })
       .catch(error => console.error('Lỗi khi lấy danh sách nhân viên:', error));
-  };
+  }
 
-  $scope.departments = function () {
+  // Hàm lấy danh sách phòng ban
+  $scope.getDepartments = function () {
     $http.get(`${domain}/api/department/getAll`)
       .then(response => $scope.departments = response.data)
       .catch(error => console.error('Lỗi khi lấy danh sách nhân viên:', error));
@@ -22,7 +31,53 @@ app.controller('employeeController', function ($scope, $http) {
       .catch(error => console.error('Lỗi khi lấy danh sách nhân viên:', error));
   };
 
-  // Khởi tạo controller
+  $scope.getData = function (positionId, departmentId) {
+    return $http.get(`${domain}/api/PositionDepartment/get-by-position-and-department`, {
+      params: { departmentId: departmentId, positionId: positionId }
+    })
+      .then(response => {
+        if (!response.data) {
+          console.error('Không có dữ liệu.');
+          return null;
+        } else {
+          const id = response.data.id;
+          console.log("ID: ", id);
+          return id;
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi khi lấy dữ liệu:', error);
+        return null;
+      });
+  };
+
+  $scope.$watch('searchText', function (newValue) {
+    if (!newValue) {
+      // Nếu không có từ khóa tìm kiếm, hiển thị toàn bộ danh sách
+      $scope.filteredEmployees = $scope.employees;
+    } else {
+      // Lọc danh sách dựa trên từ khóa tìm kiếm
+      $scope.filteredEmployees = $scope.employees.filter(employee =>
+        employee.fullName.toLowerCase().includes(newValue.toLowerCase())
+      );
+    }
+    console.log($scope.filteredEmployees)
+  });
+
+  $scope.showErrorModal = function (message) {
+    $scope.errorMessage = message;
+    var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    errorModal.show();
+  };
+
+  $scope.showSuccessModal = function (message) {
+    $scope.successMessage = message;
+    var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+  };
+
+
+  // Hàm khởi tạo
   $scope.init = function () {
     $scope.getEmployees();
     $scope.newEmployee = {};
@@ -47,30 +102,90 @@ app.controller('employeeController', function ($scope, $http) {
   };
 
   // Thêm nhân viên
-  $scope.addEmployee = () => {
-    $http.post(`${baseUrl}/add`, $scope.newEmployee)
-      .then(response => {
-        $scope.getEmployees(); // Cập nhật danh sách nhân viên
-        $('#addModal').modal('hide'); // Đóng modal sau khi thêm
-      })
-      .catch(error => console.error('Lỗi khi thêm nhân viên:', error));
+  $scope.addEmployee = function () {
+    $scope.getData($scope.newEmployee.position, $scope.newEmployee.department).then((positionDepartmentID) => {
+      if (!positionDepartmentID) {
+        $('#addModal').modal('hide'); // Đóng modal
+        $scope.showErrorModal("Không tìm thấy phòng ban hoặc chức vụ");
+        return;
+      }
+
+      const employeeData = {
+        positionDepartmentID: positionDepartmentID,
+        fullName: $scope.newEmployee.fullName,
+        gender: $scope.newEmployee.gender, // Chuyển đổi giới tính
+        birthDate: $scope.newEmployee.birthDate,
+        email: $scope.newEmployee.email,
+        phoneNumber: $scope.newEmployee.phoneNumber,
+        idcardNumber: $scope.newEmployee.IDCardNumber,
+        address: $scope.newEmployee.address,
+        avatarURL: $scope.newEmployee.avatarURL || null, // Xử lý URL hình ảnh
+        password: "abc123" // Nếu có trường mật khẩu
+      };
+
+      console.log(employeeData);
+
+      $http.post(`${baseUrl}/createEmployee`, employeeData)
+        .then(response => {
+          console.log('Nhân viên đã được thêm thành công:', response.data);
+          $scope.getEmployees(); // Cập nhật lại danh sách nhân viên
+          $('#addModal').modal('hide'); // Đóng modal
+          $scope.showSuccessModal("Thêm nhân viên thành công"); // Hiển thị modal thông báo thành công
+        })
+        .catch(error => console.error('Lỗi khi thêm nhân viên:', error));
+    });
   };
 
-  // Cập nhật nhân viên
-  $scope.updateEmployee = () => {
-    $http.put(`${baseUrl}/update/${$scope.selectedEmployee.id}`, $scope.selectedEmployee)
-      .then(response => {
-        $scope.getEmployees(); // Cập nhật danh sách nhân viên
-        $('#updateModal').modal('hide'); // Đóng modal sau khi cập nhật
+
+  // Cập nhật thông tin nhân viên
+  $scope.updateEmployee = function () {
+    // Lấy positionDepartmentID từ API
+    $scope.getData($scope.selectedEmployee.positionDepartmentID.positionID.id, $scope.selectedEmployee.positionDepartmentID.departmentID.id)
+      .then(positionDepartmentID => {
+        console.log("SELETED: ", positionDepartmentID);
+
+        if (positionDepartmentID == null) {
+          $('#updateModal').modal('hide'); // Đóng modal
+          $scope.showErrorModal("Thông tin phòng ban - chức vụ đang chọn chưa tồn tại");
+        } else {
+          // Chuẩn bị dữ liệu employee để gửi lên server
+          const employeeData = {
+            id: $scope.selectedEmployee.id,
+            positionDepartmentID: positionDepartmentID,
+            fullName: $scope.selectedEmployee.fullName,
+            gender: $scope.selectedEmployee.gender,
+            birthDate: $scope.selectedEmployee.birthDate,
+            email: $scope.selectedEmployee.email,
+            phoneNumber: $scope.selectedEmployee.phoneNumber,
+            idcardNumber: $scope.selectedEmployee.IDCardNumber,
+            address: $scope.selectedEmployee.address,
+            avatarURL: $scope.selectedEmployee.avatarURL || null,
+          };
+
+          console.log(employeeData);
+
+          // Gửi yêu cầu cập nhật nhân viên
+          $http.put(`${baseUrl}/updateEmployee`, employeeData)
+            .then(response => {
+              console.log('Cập nhật nhân viên thành công:', response.data);
+              $scope.getEmployees(); // Cập nhật lại danh sách nhân viên
+              $('#updateModal').modal('hide'); // Đóng modal
+              $scope.showSuccessModal("Cập nhật nhân viên thành công");
+            })
+            .catch(error => console.error('Lỗi khi cập nhật nhân viên:', error));
+        }
       })
-      .catch(error => console.error('Lỗi khi cập nhật nhân viên:', error));
+      .catch(error => {
+        console.error('Lỗi khi lấy positionDepartmentID:', error);
+        $scope.showErrorModal("Lỗi khi lấy dữ liệu phòng ban hoặc chức vụ");
+      });
   };
 
-  // Toggle trạng thái kích hoạt
-  $scope.toggleStatus = (employee) => {
-    employee.trangthai = employee.trangthai === 'Kích hoạt' ? 'Ngừng kích hoạt' : 'Kích hoạt';
-    // Gọi API để cập nhật trạng thái
-    $http.put(`${baseUrl}/toggleStatus/${employee.id}`, { status: employee.trangthai })
+
+  // Chuyển đổi trạng thái nhân viên
+  $scope.toggleStatus = function (employee) {
+    employee.isActive = !employee.isActive;
+    $http.put(`${baseUrl}/updateActiveEmployee/${employee.id}`, { isActive: employee.isActive })
       .then(response => {
         console.log('Cập nhật trạng thái thành công:', response.data);
       })
