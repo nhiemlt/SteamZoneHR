@@ -13,8 +13,16 @@
     <div class="col-md-12">
       <div class="tile">
         <div class="tile-body">
-          <div class="row d-flex align-items-end flex-column">
+          <div class="d-flex justify-content-between">
+            <div class="input-group mb-3 me-5 w-25">
+              <input type="text" class="form-control"  placeholder="Tìm kiếm nhân viên..." ng-model="searchText">
+              <span class="input-group-text" id="basic-addon2"><i class="bi bi-search"></i></span>
+            </div>
+            
             <button class="btn btn-outline-primary mb-3 col-2 me-2" ng-click="openAddModal()">Thêm nhân viên</button>
+          </div>
+          <div class="row d-flex align-items-end flex-column">
+            
           </div>
           <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
             <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="employees">
@@ -34,7 +42,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="employee in employees">
+                <tr ng-repeat="employee in filteredEmployees">
                   <td>{{$index + 1}}</td>
                   <td>{{employee.positionDepartmentID.positionID.positionName}} -
                     {{employee.positionDepartmentID.departmentID.departmentName}}</td>
@@ -55,7 +63,7 @@
                     </div>
                   </td>
                   <td>
-                    <button class="btn btn-primary btn-sm" ng-click="openUpdateModal(employee)">Cập nhật</button>
+                    <button class="btn btn-primary btn-sm" style="font-size: 0.5rem;" ng-click="openUpdateModal(employee)"><i class="bi bi-pencil-square"></i></button>
                   </td>
                 </tr>
               </tbody>
@@ -83,10 +91,10 @@
                 <label for="new_gioitinh" class="form-label">Giới tính</label>
                 <div>
                   <label>
-                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="Nam"> Nam
+                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="true"> Nam
                   </label>
                   <label>
-                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="Nữ"> Nữ
+                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="false"> Nữ
                   </label>
                 </div>
               </div>
@@ -160,10 +168,10 @@
                 <label for="update_gioitinh" class="form-label">Giới tính</label>
                 <div>
                   <label>
-                    <input type="radio" value="true" ng-checked="selectedEmployee.gender" name="gender"> Nam
+                    <input type="radio" ng-model="selectedEmployee.gender" ng-value="true" name="gender"> Nam
                   </label>
                   <label>
-                    <input type="radio" value="false" ng-checked="!selectedEmployee.gender" name="gender"> Nữ
+                    <input type="radio" ng-model="selectedEmployee.gender" ng-value="false" name="gender"> Nữ
                   </label>
                 </div>
               </div>
