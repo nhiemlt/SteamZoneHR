@@ -1,4 +1,4 @@
-**SteamZoneHR - Giao diện quản lý nhân sự******
+SteamZoneHR - Giao diện quản lý nhân sự
 SteamZoneHR là giao diện quản lý nhân sự miễn phí, mô-đun và dễ tùy chỉnh, được xây dựng bằng Bootstrap 5 và AngularJS 1.6.9.
 
 Bắt đầu
