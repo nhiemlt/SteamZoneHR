@@ -1,15 +1,9 @@
 app.controller('employeeController', function ($scope, $http) {
+  // Lấy dữ liệu nhân viên từ API
+  
   const domain = 'http://localhost:8080';
-  const baseUrl = `${domain}/api/employee`;
+  const baseUrl = domain+'/api/employee';
 
-  // Khởi tạo các biến và danh sách
-  $scope.employees = [];
-  $scope.departments = [];
-  $scope.positions = [];
-  $scope.newEmployee = {};
-  $scope.selectedEmployee = {};
-
-  // Hàm lấy danh sách nhân viên
   $scope.getEmployees = function () {
     $http.get(`${baseUrl}/getAll`)
       .then(response => {
@@ -28,14 +22,13 @@ app.controller('employeeController', function ($scope, $http) {
   $scope.getDepartments = function () {
     $http.get(`${domain}/api/department/getAll`)
       .then(response => $scope.departments = response.data)
-      .catch(error => console.error('Lỗi khi lấy danh sách phòng ban:', error));
+      .catch(error => console.error('Lỗi khi lấy danh sách nhân viên:', error));
   };
 
-  // Hàm lấy danh sách chức vụ
-  $scope.getPositions = function () {
+  $scope.positions = function () {
     $http.get(`${domain}/api/position`)
       .then(response => $scope.positions = response.data)
-      .catch(error => console.error('Lỗi khi lấy danh sách chức vụ:', error));
+      .catch(error => console.error('Lỗi khi lấy danh sách nhân viên:', error));
   };
 
   $scope.getData = function (positionId, departmentId) {
@@ -87,23 +80,25 @@ app.controller('employeeController', function ($scope, $http) {
   // Hàm khởi tạo
   $scope.init = function () {
     $scope.getEmployees();
-    $scope.getDepartments();
-    $scope.getPositions();
+    $scope.newEmployee = {};
+    $scope.selectedEmployee = {};
+    $scope.departments = {};
+    $scope.positions = {};
   };
-
   $scope.init();
 
   // Mở modal thêm nhân viên
-  $scope.openAddModal = function () {
-    $scope.newEmployee = {};
-    $('#addModal').modal('show');
+  $scope.openAddModal = () => {
+    $scope.newEmployee = {}; // Reset dữ liệu cho nhân viên mới
+    $('#addModal').modal('show'); // Hiện modal thêm nhân viên
   };
 
   // Mở modal cập nhật nhân viên
-  $scope.openUpdateModal = function (employee) {
-    $scope.selectedEmployee = angular.copy(employee);
-    console.log("Selected employee", $scope.selectedEmployee);
-    $('#updateModal').modal('show');
+  $scope.openUpdateModal = (employee) => {
+    $scope.selectedEmployee = angular.copy(employee); 
+    console.log($scope.selectedEmployee)
+    // Sao chép dữ liệu nhân viên để cập nhật
+    $('#updateModal').modal('show'); // Hiện modal cập nhật nhân viên
   };
 
   // Thêm nhân viên
@@ -197,28 +192,28 @@ app.controller('employeeController', function ($scope, $http) {
       .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
   };
 
-  // Xem trước hình ảnh cho thêm nhân viên
-  $scope.previewNewImage = function (event) {
-    const file = event.target.files[0];
+  // Preview hình ảnh mới
+  $scope.previewNewImage = function () {
+    const file = $scope.newEmployee.hinhanhFile;
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
         $scope.$apply(() => {
-          $scope.newEmployee.avatarURL = e.target.result;
+          $scope.newEmployee.hinhanh = e.target.result; // Lưu đường dẫn hình ảnh vào newEmployee
         });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Xem trước hình ảnh cho cập nhật nhân viên
-  $scope.previewUpdateImage = function (event) {
-    const file = event.target.files[0];
+  // Preview hình ảnh cập nhật
+  $scope.previewUpdateImage = function () {
+    const file = $scope.selectedEmployee.hinhanhFile;
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
         $scope.$apply(() => {
-          $scope.selectedEmployee.avatarURL = e.target.result;
+          $scope.selectedEmployee.hinhanh = e.target.result; // Lưu đường dẫn hình ảnh vào selectedEmployee
         });
       };
       reader.readAsDataURL(file);
