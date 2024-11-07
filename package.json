@@ -5,12 +5,16 @@
     "start": "lite-server"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
     "connect-history-api-fallback": "^2.0.0",
     "http-proxy-middleware": "^3.0.3",
     "lite-server": "^2.6.1"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
-    "datatables.net-dt": "^2.1.8"
+    "datatables.net-dt": "^2.1.8",
+    "moment": "^2.30.1"
   }
 }
