@@ -77,52 +77,52 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="new_hoten" class="form-label">Họ và tên</label>
-                <input type="text" class="form-control" id="new_hoten" ng-model="newEmployee.fullName">
+                <input type="text" class="form-control" id="new_hoten" ng-model="newEmployee.fullName" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_gioitinh" class="form-label">Giới tính</label>
                 <div>
                   <label>
-                    <input type="radio" ng-model="newEmployee.gender" value="Nam"> Nam
+                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="Nam"> Nam
                   </label>
                   <label>
-                    <input type="radio" ng-model="newEmployee.gender" value="Nữ"> Nữ
+                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="Nữ"> Nữ
                   </label>
                 </div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_ngaysinh" class="form-label">Ngày sinh</label>
-                <input type="date" class="form-control" id="new_ngaysinh" ng-model="newEmployee.birthDate">
+                <input type="date" class="form-control" id="new_ngaysinh" ng-model="newEmployee.birthDate" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_department" class="form-label">Phòng ban</label>
-                <select ng-model="newEmployee.department" class="form-select" id="new_department">
+                <select ng-model="newEmployee.department" class="form-select" id="new_department" required>
                   <option value="" disabled selected>Chọn phòng ban...</option>
                   <option ng-repeat="x in departments" ng-value="{{x.id}}">{{x.departmentName}}</option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_position" class="form-label">Chức vụ</label>
-                <select ng-model="newEmployee.position" class="form-select" id="new_position">
+                <select ng-model="newEmployee.position" class="form-select" id="new_position" required>
                   <option value="" disabled selected>Chọn chức vụ...</option>
                   <option ng-repeat="x in positions" ng-value="{{x.id}}">{{x.positionName}}</option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="new_email" ng-model="newEmployee.email">
+                <input type="email" class="form-control" id="new_email" ng-model="newEmployee.email" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_sdt" class="form-label">Số điện thoại</label>
-                <input type="text" class="form-control" id="new_sdt" ng-model="newEmployee.phoneNumber">
+                <input type="text" class="form-control" id="new_sdt" ng-model="newEmployee.phoneNumber" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_cccd" class="form-label">CCCD</label>
-                <input type="text" class="form-control" id="new_cccd" ng-model="newEmployee.IDCardNumber">
+                <input type="text" class="form-control" id="new_cccd" ng-model="newEmployee.IDCardNumber" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_diachi" class="form-label">Địa chỉ</label>
-                <input type="text" class="form-control" id="new_diachi" ng-model="newEmployee.address">
+                <input type="text" class="form-control" id="new_diachi" ng-model="newEmployee.address" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_hinhanh" class="form-label">Hình ảnh</label>
