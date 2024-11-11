@@ -62,6 +62,29 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Kiểm tra nếu đã có token trong sessionStorage hoặc cookie
+            const sessionToken = sessionStorage.getItem('token');
+            const cookieToken = getCookie('token');
+
+            if (sessionToken || cookieToken) {
+                // Chuyển hướng đến index.html nếu token tồn tại
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Nếu không có token, tiếp tục giải mã username và password nếu có
+            const encryptedUsername = getCookie('username');
+            const encryptedPassword = getCookie('password');
+
+            if (encryptedUsername && encryptedPassword) {
+                const username = decrypt(encryptedUsername);
+                const password = decrypt(encryptedPassword);
+
+                autoLogin(username, password);
+            }
+        });
+
         // Khóa bí mật dùng để mã hóa
         const secretKey = 'grtrteesedngfhjrterfgsdfrewqrrtyrhgg543dsf342hdfr';
 
