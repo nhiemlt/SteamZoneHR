@@ -1,6 +1,6 @@
 app.controller('contractController', function ($scope, $http) {
 
-  const domain = 'http://localhost:8080';
+  const domain = 'http://192.168.1.19:8080';
   const baseUrl = domain + '/api/contracts';
 
 

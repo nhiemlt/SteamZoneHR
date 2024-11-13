@@ -27,6 +27,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- AngularFire -->
+  <script src="https://cdn.jsdelivr.net/npm/angularfire/dist/angularfire.min.js"></script>
+
   <link rel="stylesheet" href="./css/custom.css">
 </head>
 
@@ -92,8 +100,6 @@
             class="app-menu__label">Danh sách hợp đồng</span></a></li></a></li>
       <li><a class="app-menu__item" href="/allowances"><i class="app-menu__icon bi bi-wallet2"></i><span
             class="app-menu__label">Quản lý phụ cấp</span></a></li></a></li>
-      <li><a class="app-menu__item" href="/leave-records"><i class="app-menu__icon bi bi-card-checklist"></i><span
-            class="app-menu__label">Quản lý nghỉ phép</span></a></li></a></li>
     </ul>
 
   </aside>
@@ -118,37 +124,63 @@
   <script src="js/route/positionController.js"></script>
   <script src="js/route/positionDepartmentController.js"></script>
   <script src="js/route/salaryStatisticsController.js"></script>
-  <script src="js/route/leaveRecordController.js"></script>
 
-  <script src="js/plugins/datatables.js" rel="stylesheet"></script>
   <!-- Thêm vào phần <head> hoặc trước khi bạn tải script AngularJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
       // Lấy thông tin người dùng từ sessionStorage
-      var userSession = JSON.parse(sessionStorage.getItem('userSession'));
-
-      if (!userSession) {
+      let getTokenFromSession = sessionStorage.getItem('token');
+      let tokenFromCookie = Cookies.get('token');
+      let token;
+      if (!getTokenFromSession && !tokenFromCookie) {
         // Nếu không có thông tin đăng nhập hợp lệ, chuyển hướng đến trang đăng nhập
         window.location.href = 'login.html';
       } else {
-        // Nếu có thông tin đăng nhập, gọi API để lấy thông tin người dùng
-        const email = userSession.username;
+        if (tokenFromCookie) {
+          // Nếu có cookie, lấy token từ cookie
+          token = tokenFromCookie;
+        } else if (getTokenFromSession) {
+          // Nếu không có cookie, nhưng có session, lấy token từ sessionStorage
+          token = getTokenFromSession;
+        }
 
-        fetch(`http://localhost:8080/api/employee/get-by-email?email=${encodeURIComponent(email)}`)
+        fetch(`http://localhost:8080/validate?token=${encodeURIComponent(token)}`)
           .then(response => {
-            if (!response.ok) throw new Error("Không tìm thấy người dùng");
-            return response.json();
+            // Kiểm tra nếu status không phải 2xx, ném lỗi và đọc phản hồi dưới dạng văn bản
+            if (!response.ok) {
+              return response.text().then(text => {
+                // Nếu phản hồi không thành công, ném lỗi với nội dung trả về
+                throw new Error(text || "Không tìm thấy người dùng");
+              });
+            }
+
+            // Nếu phản hồi trả về chuỗi (không phải JSON), chúng ta xử lý như chuỗi bình thường
+            return response.text().then(text => {
+              if (text.includes("Token hợp lệ")) {
+                return { message: text };  // Bạn có thể tạo đối tượng JSON từ chuỗi này nếu cần
+              } else {
+                throw new Error("Thông báo không hợp lệ: " + text);
+              }
+            });
           })
           .then(data => {
-            // Cập nhật giao diện với dữ liệu người dùng
-            document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
-            document.querySelector(".app-sidebar__user-name").textContent = data.fullName || "Tên không có sẵn";
-            document.querySelector(".app-sidebar__user-designation").textContent = data.positionDepartmentID.positionID.positionName || "Vị trí không có sẵn";
-            document.getElementById("department").textContent = data.positionDepartmentID.departmentID.departmentName || "Phòng ban không có sẵn";
+            // Xử lý thông tin người dùng từ phản hồi nếu cần
+            if (data.message) { // Đây là thông báo mà bạn có thể sử dụng
+              const account = data.message.split(":").pop().trim();
+              // Cập nhật giao diện với dữ liệu người dùng nếu cần
+              document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
+              document.querySelector(".app-sidebar__user-name").textContent = account;  // Ví dụ từ thông báo
+              document.querySelector(".app-sidebar__user-designation").textContent = "Vị trí không có sẵn";  // Cập nhật nếu cần
+            }
           })
-          .catch(error => console.error("Lỗi khi lấy thông tin người dùng:", error));
+          .catch(error => {
+            // In lỗi ra console nếu có
+            console.error("Lỗi khi lấy thông tin người dùng:", error);
+            // Hiển thị thông báo lỗi cho người dùng nếu cần
+            alert("Lỗi: " + error.message);
+          });
       }
     });
 
@@ -161,7 +193,7 @@
       // Xóa riêng cookie của username và password (nếu có)
       deleteCookie('username');
       deleteCookie('password');
-
+      deleteCookie('token');
       // Xóa token trong localStorage và sessionStorage
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
@@ -199,5 +231,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 
 </html>
