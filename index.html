@@ -27,6 +27,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- AngularFire -->
+  <script src="https://cdn.jsdelivr.net/npm/angularfire/dist/angularfire.min.js"></script>
+
   <link rel="stylesheet" href="./css/custom.css">
 </head>
 
@@ -117,7 +125,6 @@
   <script src="js/route/positionDepartmentController.js"></script>
   <script src="js/route/salaryStatisticsController.js"></script>
 
-  <script src="js/plugins/datatables.js" rel="stylesheet"></script>
   <!-- Thêm vào phần <head> hoặc trước khi bạn tải script AngularJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
@@ -175,8 +182,8 @@
             // Hiển thị thông báo lỗi cho người dùng nếu cần
             alert("Lỗi: " + error.message);
           });
-        }
-      });
+      }
+    });
 
     function logout() {
       // Xóa tất cả cookies (bao gồm cookie lưu trữ username và password)
