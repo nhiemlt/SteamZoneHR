@@ -1,7 +1,7 @@
 app.controller('employeeController', function ($scope, $http) {
   // Lấy dữ liệu nhân viên từ API
   
-  const domain = 'http://localhost:8080';
+  const domain = 'http://192.168.1.19:8080';
   const baseUrl = domain+'/api/employee';
 
   $scope.getEmployees = function () {

@@ -9,7 +9,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
 
     // Hàm lấy tất cả phòng ban
     $scope.loadDepartments = function () {
-        $http.get('http://localhost:8080/api/PositionDepartment/getAll')
+        $http.get('http://192.168.1.19:8080/api/PositionDepartment/getAll')
             .then(function (response) {
                 $scope.departments = response.data; // Cập nhật danh sách phòng ban
                 console.log($scope.departments);
@@ -21,7 +21,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
 
     // Hàm lấy tất cả chức vụ
     $scope.loadPositions = function () {
-        $http.get('http://localhost:8080/api/position')
+        $http.get('http://192.168.1.19:8080/api/position')
             .then(function (response) {
                 $scope.positions = response.data; // Cập nhật danh sách chức vụ
             })
@@ -32,7 +32,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
 
     // Hàm thêm phòng ban
     $scope.addDepartment = function () {
-        $http.post('http://localhost:8080/api/PositionDepartment/add-position-department', $scope.newDepartment)
+        $http.post('http://192.168.1.19:8080/api/PositionDepartment/add-position-department', $scope.newDepartment)
             .then(function (response) {
                 $scope.departments.push(response.data); // Thêm phòng ban mới vào danh sách
                 $scope.clearNewDepartment(); // Reset form
@@ -45,7 +45,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
     // Hàm cập nhật phòng ban
     $scope.updateDepartment = function () {
         if ($scope.selectedDepartment) {
-            $http.put(`http://localhost:8080/api/PositionDepartment/update-position-department/${$scope.selectedDepartment.id}`, $scope.selectedDepartment)
+            $http.put(`http://192.168.1.19:8080/api/PositionDepartment/update-position-department/${$scope.selectedDepartment.id}`, $scope.selectedDepartment)
                 .then(function (response) {
                     const index = $scope.departments.findIndex(department => department.id === response.data.id);
                     if (index !== -1) {
@@ -61,7 +61,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
 
     // Hàm thêm chức vụ
     $scope.addPosition = function () {
-        $http.post('http://localhost:8080/api/position', $scope.newPosition)
+        $http.post('http://192.168.1.19:8080/api/position', $scope.newPosition)
             .then(function (response) {
                 $scope.positions.push(response.data); // Thêm chức vụ mới vào danh sách
                 $scope.clearNewPosition(); // Reset form
@@ -74,7 +74,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
     // Hàm cập nhật chức vụ
     $scope.updatePosition = function () {
         if ($scope.selectedPosition) {
-            $http.put(`http://localhost:8080/api/position/${$scope.selectedPosition.id}`, $scope.selectedPosition)
+            $http.put(`http://192.168.1.19:8080/api/position/${$scope.selectedPosition.id}`, $scope.selectedPosition)
                 .then(function (response) {
                     const index = $scope.positions.findIndex(position => position.id === response.data.id);
                     if (index !== -1) {
@@ -90,7 +90,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
 
     // Hàm xóa phòng ban
     $scope.deleteDepartment = function (departmentId) {
-        $http.delete(`http://localhost:8080/api/PositionDepartment/${departmentId}`)
+        $http.delete(`http://192.168.1.19:8080/api/PositionDepartment/${departmentId}`)
             .then(function () {
                 $scope.loadDepartments(); // Tải lại danh sách sau khi xóa
             })
@@ -101,7 +101,7 @@ angular.module('app').controller('positionController', function ($scope, $http) 
 
     // Hàm xóa chức vụ
     $scope.deletePosition = function (positionId) {
-        $http.delete(`http://localhost:8080/api/position/${positionId}`)
+        $http.delete(`http://192.168.1.19:8080/api/position/${positionId}`)
             .then(function () {
                 $scope.loadPositions(); // Tải lại danh sách sau khi xóa
             })
