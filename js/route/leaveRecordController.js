@@ -7,23 +7,20 @@ app.controller('leaveRecordController', function ($scope, $http, $routeParams) {
 
     $scope.leaverecords = [];
 
-    // Dữ liệu mẫu cho nhân viên và người xác nhận
     $scope.employees = [];
 
-    // Lấy danh sách nhân viên có phân trang và tìm kiếm
     $scope.getAllAccount = function (searchKeyword = '', page = 0, size = 10) {
-        // Gửi yêu cầu tới API với các tham số phân trang và tìm kiếm
         $http.get(`${domain}/api/employees`, {
             params: {
-                keyword: searchKeyword,  // Từ khóa tìm kiếm
-                page: page,              // Số trang
-                size: size               // Số lượng nhân viên trên mỗi trang
+                keyword: searchKeyword,
+                page: page,
+                size: size 
             }
         })
             .then(response => {
-                $scope.employees = response.data.content; // Lấy dữ liệu nhân viên từ phần `content` trong trang
-                $scope.totalEmployees = response.data.totalElements; // Tổng số nhân viên
-                $scope.totalPages = response.data.totalPages; // Tổng số trang
+                $scope.employees = response.data.content;
+                $scope.totalEmployees = response.data.totalElements;
+                $scope.totalPages = response.data.totalPages;
             })
             .catch(error => {
                 console.error('Lỗi khi lấy danh sách nhân viên:', error);
