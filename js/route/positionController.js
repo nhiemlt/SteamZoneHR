@@ -1,130 +1,3 @@
-<<<<<<< HEAD
-angular.module('app').controller('positionController', function ($scope, $http) {
-    // Khởi tạo dữ liệu
-    $scope.positions = []; // Danh sách chức vụ
-    $scope.departments = []; // Danh sách phòng ban
-    $scope.newDepartment = {}; // Dữ liệu phòng ban mới
-    $scope.selectedDepartment = null; // Phòng ban đang được chọn
-    $scope.newPosition = {}; // Dữ liệu chức vụ mới
-    $scope.selectedPosition = null; // Chức vụ đang được chọn
-
-    // Hàm lấy tất cả phòng ban
-    $scope.loadDepartments = function () {
-        $http.get('http://192.168.1.19:8080/api/PositionDepartment/getAll')
-            .then(function (response) {
-                $scope.departments = response.data; // Cập nhật danh sách phòng ban
-                console.log($scope.departments);
-            })
-            .catch(function (error) {
-                console.error('Lỗi API:', error); // Xử lý lỗi
-            });
-    };
-
-    // Hàm lấy tất cả chức vụ
-    $scope.loadPositions = function () {
-        $http.get('http://192.168.1.19:8080/api/position')
-            .then(function (response) {
-                $scope.positions = response.data; // Cập nhật danh sách chức vụ
-            })
-            .catch(function (error) {
-                console.error('Lỗi API:', error); // Xử lý lỗi
-            });
-    };
-
-    // Hàm thêm phòng ban
-    $scope.addDepartment = function () {
-        $http.post('http://192.168.1.19:8080/api/PositionDepartment/add-position-department', $scope.newDepartment)
-            .then(function (response) {
-                $scope.departments.push(response.data); // Thêm phòng ban mới vào danh sách
-                $scope.clearNewDepartment(); // Reset form
-            })
-            .catch(function (error) {
-                console.error('Lỗi API:', error); // Xử lý lỗi
-            });
-    };
-
-    // Hàm cập nhật phòng ban
-    $scope.updateDepartment = function () {
-        if ($scope.selectedDepartment) {
-            $http.put(`http://192.168.1.19:8080/api/PositionDepartment/update-position-department/${$scope.selectedDepartment.id}`, $scope.selectedDepartment)
-                .then(function (response) {
-                    const index = $scope.departments.findIndex(department => department.id === response.data.id);
-                    if (index !== -1) {
-                        $scope.departments[index] = response.data; // Cập nhật danh sách
-                    }
-                    $scope.selectedDepartment = null; // Reset lựa chọn
-                })
-                .catch(function (error) {
-                    console.error('Lỗi API:', error); // Xử lý lỗi
-                });
-        }
-    };
-
-    // Hàm thêm chức vụ
-    $scope.addPosition = function () {
-        $http.post('http://192.168.1.19:8080/api/position', $scope.newPosition)
-            .then(function (response) {
-                $scope.positions.push(response.data); // Thêm chức vụ mới vào danh sách
-                $scope.clearNewPosition(); // Reset form
-            })
-            .catch(function (error) {
-                console.error('Lỗi API:', error); // Xử lý lỗi
-            });
-    };
-
-    // Hàm cập nhật chức vụ
-    $scope.updatePosition = function () {
-        if ($scope.selectedPosition) {
-            $http.put(`http://192.168.1.19:8080/api/position/${$scope.selectedPosition.id}`, $scope.selectedPosition)
-                .then(function (response) {
-                    const index = $scope.positions.findIndex(position => position.id === response.data.id);
-                    if (index !== -1) {
-                        $scope.positions[index] = response.data; // Cập nhật danh sách
-                    }
-                    $scope.selectedPosition = null; // Reset lựa chọn
-                })
-                .catch(function (error) {
-                    console.error('Lỗi API:', error); // Xử lý lỗi
-                });
-        }
-    };
-
-    // Hàm xóa phòng ban
-    $scope.deleteDepartment = function (departmentId) {
-        $http.delete(`http://192.168.1.19:8080/api/PositionDepartment/${departmentId}`)
-            .then(function () {
-                $scope.loadDepartments(); // Tải lại danh sách sau khi xóa
-            })
-            .catch(function (error) {
-                console.error('Lỗi API:', error); // Xử lý lỗi
-            });
-    };
-
-    // Hàm xóa chức vụ
-    $scope.deletePosition = function (positionId) {
-        $http.delete(`http://192.168.1.19:8080/api/position/${positionId}`)
-            .then(function () {
-                $scope.loadPositions(); // Tải lại danh sách sau khi xóa
-            })
-            .catch(function (error) {
-                console.error('Lỗi API:', error); // Xử lý lỗi
-            });
-    };
-
-    // Hàm làm mới thông tin phòng ban
-    $scope.clearNewDepartment = function () {
-        $scope.newDepartment = {}; // Reset thông tin phòng ban mới
-    };
-
-    // Hàm làm mới thông tin chức vụ
-    $scope.clearNewPosition = function () {
-        $scope.newPosition = {}; // Reset thông tin chức vụ mới
-    };
-
-    // Gọi các hàm để tải dữ liệu khi controller khởi tạo
-    $scope.loadDepartments();   
-    $scope.loadPositions(); 
-=======
 app.controller("positionController", function ($scope, $http) {
   const baseUrl = "http://localhost:8080/api/departments";
   const baseURLP = "http://localhost:8080/api/positions";
@@ -160,15 +33,13 @@ app.controller("positionController", function ($scope, $http) {
     return Math.ceil($scope.departments.length / $scope.departmentItemsPerPage);
   };
 
-  // Function to get the paginated departments
   $scope.getPaginatedDepartments = function () {
     var start =
       ($scope.currentDepartmentPage - 1) * $scope.departmentItemsPerPage;
     var end = start + $scope.departmentItemsPerPage;
-    return $scope.departments.slice(start, end); // Return the sliced array for the current page
+    return $scope.departments.slice(start, end);
   };
 
-  // Function to change the current page
   $scope.changeDepartmentPage = function (page) {
     if (page >= 1 && page <= $scope.getTotalDepartmentPages()) {
       $scope.currentDepartmentPage = page;
@@ -304,20 +175,178 @@ app.controller("positionController", function ($scope, $http) {
       }
     });
   };
-
-  //  chức vụ
+  // phần chức vụ
   $scope.getActiveDepartments = function () {
     $http
       .get(baseUrl + "/active")
       .then(function (response) {
         $scope.activeDepartments = response.data;
-        console.log($scope.activeDepartments);
       })
       .catch(function (error) {
         Swal.fire("Lỗi", "Không thể lấy danh sách phòng ban.", "error");
       });
   };
-  $scope.getDepartments();
+  $scope.positions = [];
+  $scope.currentPositionPage = 1;
+  $scope.positionItemsPerPage = 5;
+  $scope.selectedPosition = {};
+  $scope.newPosition = {};
+  $scope.positionToUpdate = {};
+  $scope.getActiveDepartment2s = function () {
+    $http
+      .get(baseUrl + "/active")
+      .then(function (response) {
+        $scope.activeDepartment2s = response.data;
+      })
+      .catch(function (error) {
+        Swal.fire("Lỗi", "Không thể lấy danh sách phòng ban.", "error");
+      });
+  };
+  $scope.getPositions = function () {
+    $http
+      .get(baseURLP)
+      .then((response) => {
+        $scope.positions = response.data;
+        $scope.totalPositionPages = Math.ceil(
+          $scope.positions.length / $scope.positionItemsPerPage
+        );
+        // Cập nhật lại chức vụ đã phân trang
+        $scope.getPaginatedPositions();
+      })
+      .catch((error) => {
+        console.error("Error fetching positions:", error);
+      });
+  };
+
+  // Hàm tính toán chức vụ theo trang hiện tại
+  $scope.getPaginatedPositions = function () {
+    var start = ($scope.currentPositionPage - 1) * $scope.positionItemsPerPage;
+    var end = start + $scope.positionItemsPerPage;
+    $scope.paginatedPositions = $scope.positions.slice(start, end); // Dữ liệu cho trang hiện tại
+  };
+
+  // Hàm thay đổi trang
+  $scope.changePositionPage = function (page) {
+    if (page >= 1 && page <= $scope.totalPositionPages) {
+      $scope.currentPositionPage = page;
+      $scope.getPaginatedPositions(); // Lấy dữ liệu cho trang mới
+    }
+  };
+  //  thêm
+  $scope.addPosition = function () {
+    if (
+      !$scope.newPosition.positionName ||
+      $scope.newPosition.positionName.length < 3
+    ) {
+      Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
+      return;
+    }
+    if (!$scope.selectedDepartment) {
+      Swal.fire("Lỗi", "Vui lòng chọn phòng ban.", "error");
+      return;
+    }
+    const positionModel = {
+      positionName: $scope.newPosition.positionName,
+      departmentId: $scope.selectedDepartment,
+    };
+    $http
+      .post(baseURLP, positionModel) // Điều chỉnh endpoint theo API của bạn
+      .then((response) => {
+        Swal.fire("Thành công", "Chức vụ đã được thêm thành công.", "success");
+        $scope.newPosition.positionName = "";
+        $scope.selectedDepartment = "";
+        $scope.getPositions();
+      })
+      .catch((error) => {
+        console.error("Lỗi khi thêm chức vụ:", error);
+      });
+  };
+  $scope.deletePosition = function (positionId) {
+    // Xác nhận trước khi xóa
+    Swal.fire({
+      title: "Bạn có chắc chắn muốn xóa chức vụ này?",
+      text: "Chức vụ sẽ bị xóa vĩnh viễn!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Gửi yêu cầu xóa tới backend
+        $http
+          .delete(baseURLP + "/" + positionId)
+          .then((response) => {
+            Swal.fire("Thành công", response.data, "success");
+            $scope.getPositions(); // Cập nhật danh sách các chức vụ
+          })
+          .catch((error) => {
+            console.error("Lỗi khi xóa chức vụ:", error);
+            if (error.status === 409) {
+              Swal.fire(
+                "Lỗi",
+                "Không thể xóa chức vụ này vì có nhân viên đang sử dụng nó.",
+                "error"
+              );
+            } else if (error.status === 404) {
+              Swal.fire("Lỗi", "Không tìm thấy chức vụ này.", "error");
+            } else {
+              console.log("à nhon xê ô" + error);
+
+              Swal.fire(
+                "Lỗi",
+                "Có lỗi xảy ra trong quá trình xóa chức vụ.",
+                "error"
+              );
+            }
+          });
+      }
+    });
+  };
+
+  //
+  // Lấy thông tin chức vụ để cập nhật
+  $scope.loadPositionForUpdate = function (positionId) {
+    $http
+      .get(baseURLP + "/" + positionId)
+      .then(function (response) {
+        $scope.positionToUpdate = response.data;
+        // Mở modal cập nhật
+        $("#updatePositionModal").modal("show");
+      })
+      .catch(function (error) {
+        console.error("Lỗi khi lấy thông tin chức vụ:", error);
+        Swal.fire("Lỗi", "Không thể lấy thông tin chức vụ.", "error");
+      });
+  };
+
+  // Cập nhật chức vụ
+  $scope.updatePosition = function () {
+    if (
+      !$scope.positionToUpdate.positionName ||
+      !$scope.positionToUpdate.departmentId
+    ) {
+      Swal.fire(
+        "Lỗi",
+        "Vui lòng điền đầy đủ thông tin chức vụ và phòng ban.",
+        "error"
+      );
+      return;
+    }
+    // Gửi yêu cầu PUT tới API
+    $http
+      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
+      .then(function (response) {
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật.", "success");
+        $("#updatePositionModal").modal("hide"); // Đóng modal
+        $scope.getPositions(); // Cập nhật lại danh sách chức vụ
+      })
+      .catch(function (error) {
+        console.error("Lỗi khi cập nhật chức vụ:", error);
+        Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ.", "error");
+      });
+  };
   $scope.getActiveDepartments();
->>>>>>> 8e7ca87ea73177e305db4adff195abb698160f63
+  $scope.getDepartments();
+  $scope.getPositions();
+  $scope.getActiveDepartment2s();
 });

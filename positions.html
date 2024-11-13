@@ -111,13 +111,16 @@
         </form>
         <!-- Phân trang -->
         <nav aria-label="Department pagination">
-          <ul class="pagination">
-            <!-- Show page numbers dynamically -->
+          <ul class="pagination pagination-sm">
             <li
               ng-repeat="page in [].constructor(getTotalDepartmentPages()) track by $index"
               ng-class="{ active: currentDepartmentPage === $index + 1 }"
             >
-              <a class="page-link" ng-click="changeDepartmentPage($index + 1)">
+              <a
+                class="page-link"
+                ng-click="changeDepartmentPage($index + 1)"
+                style="cursor: pointer"
+              >
                 {{ $index + 1 }}
               </a>
             </li>
@@ -159,22 +162,24 @@
                 </button>
               </div>
               <div class="col-md-6 mt-2">
-                <label class="mb-2">Phòng ban:</label>
+                <label class="m">Phòng ban:</label>
                 <div class="d-flex flex-wrap gap-3">
-                  <div
-                    class="form-check"
-                    ng-repeat="department in activeDepartments"
+                  <select
+                    aria-label="Chọn phòng ban"
+                    class="form-select"
+                    id="departmentSelect"
+                    ng-model="selectedDepartment"
                   >
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      ng-model="department.selected"
-                      ng-change="updateSelectedDepartments()"
-                    />
-                    <label class="form-check-label">
+                    <option value="" disabled selected>
+                      Chọn phòng ban...
+                    </option>
+                    <option
+                      ng-repeat="department in activeDepartments"
+                      ng-value="department.id"
+                    >
                       {{ department.departmentName }}
-                    </label>
-                  </div>
+                    </option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -195,7 +200,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="position in getPaginatedPositions()">
+              <tr ng-repeat="position in paginatedPositions">
                 <td>
                   {{ ($index + 1) + (currentPositionPage - 1) *
                   positionItemsPerPage }}
@@ -209,21 +214,13 @@
                     ng-keyup="checkEnter($event, position)"
                   />
                   <span ng-hide="position.isEditing"
-                    >{{ position.positionID.positionName }}</span
+                    >{{ position.positionName }}</span
                   >
                 </td>
-                <td>
-                  {{ position.departmentID.departmentName }}/ ID:
-                  {{position.id}}
-                </td>
-
+                <td>{{ position.departmentName }}</td>
                 <td class="d-flex justify-content-center">
-                  <button
-                    class="btn btn-outline btn-success me-1"
-                    ng-click="editPosition(position)"
-                  >
-                    Cập nhật
-                  </button>
+                  <button class="btn btn-outline btn-success">Cập nhật</button>
+
                   <button
                     class="btn btn-outline btn-danger"
                     ng-click="deletePosition(position.id)"
@@ -235,82 +232,24 @@
             </tbody>
           </table>
         </form>
-
-        <!-- Phân trang -->
+        <!-- Phân trang chức vụ -->
         <nav aria-label="Position pagination">
-          <ul class="pagination">
+          <ul class="pagination pagination-sm">
             <li
-              ng-repeat="page in [].constructor(getTotalPositionPages()) track by $index"
+              ng-repeat="page in [].constructor(totalPositionPages) track by $index"
               ng-class="{ active: currentPositionPage === $index + 1 }"
             >
-              <a class="page-link" ng-click="changePositionPage($index + 1)"
-                >{{ $index + 1 }}</a
+              <a
+                class="page-link"
+                ng-click="changePositionPage($index + 1)"
+                style="cursor: pointer"
               >
+                {{ $index + 1 }}
+              </a>
             </li>
           </ul>
         </nav>
       </div>
-    </div>
-    <!-- modal phòng ban -->
-    <div
-      class="modal fade"
-      id="updateDepartmentModal"
-      tabindex="-1"
-      aria-labelledby="updateDepartmentModalLabel"
-      aria-hidden="true"
-    >
-      <form>
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="updateDepartmentModalLabel">
-                Cập nhật phòng ban
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="update_departmentName" class="form-label"
-                  >Tên phòng ban</label
-                >
-                <div class="row">
-                  <div class="col-lg-12">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="update_departmentName"
-                      ng-model="selectedDepartment.departmentName"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Đóng
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                ng-click="updateDepartment(selectedDepartment.id)"
-                ng-disabled="!selectedDepartment.departmentName"
-              >
-                Cập nhật
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
 </main>
@@ -343,22 +282,23 @@
               type="text"
               class="form-control"
               id="positionName"
-              ng-model="selectedPosition.positionName"
+              ng-model="positionToUpdate.positionName"
+              required
             />
           </div>
           <div class="form-group">
             <label for="departments">Phòng ban liên kết</label><br />
-            <div ng-repeat="department in departments">
-              <input
-                type="checkbox"
-                id="department{{department.id}}"
-                ng-model="selectedPosition.departmentID[department.id]"
-                class="ng-p"
-              />
-              <label for="department{{department.id}}"
-                >{{department.departmentName}}</label
+            <select
+              class="form-control"
+              ng-model="positionToUpdate.departmentId"
+            >
+              <option
+                ng-repeat="department in departments"
+                value="{{department.id}}"
               >
-            </div>
+                {{department.name}}
+              </option>
+            </select>
           </div>
           <div class="modal-footer">
             <button
@@ -374,4 +314,66 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- modal phòng ban -->
+<div
+  class="modal fade"
+  id="updateDepartmentModal"
+  tabindex="-1"
+  aria-labelledby="updateDepartmentModalLabel"
+  aria-hidden="true"
+>
+  <form>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateDepartmentModalLabel">
+            Cập nhật phòng ban
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="update_departmentName" class="form-label"
+              >Tên phòng ban</label
+            >
+            <div class="row">
+              <div class="col-lg-12">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="update_departmentName"
+                  ng-model="selectedDepartment.departmentName"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Đóng
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            ng-click="updateDepartment(selectedDepartment.id)"
+            ng-disabled="!selectedDepartment.departmentName"
+          >
+            Cập nhật
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>
