@@ -62,139 +62,157 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Kiểm tra nếu đã có token trong sessionStorage hoặc cookie
+            const sessionToken = sessionStorage.getItem('token');
+            const cookieToken = getCookie('token');
+
+            if (sessionToken || cookieToken) {
+                // Chuyển hướng đến index.html nếu token tồn tại
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Nếu không có token, tiếp tục giải mã username và password nếu có
+            const encryptedUsername = getCookie('username');
+            const encryptedPassword = getCookie('password');
+
+            if (encryptedUsername && encryptedPassword) {
+                const username = decrypt(encryptedUsername);
+                const password = decrypt(encryptedPassword);
+
+                autoLogin(username, password);
+            }
+        });
+
         // Khóa bí mật dùng để mã hóa
         const secretKey = 'grtrteesedngfhjrterfgsdfrewqrrtyrhgg543dsf342hdfr';
-    
+
         // Lắng nghe sự kiện khi người dùng nhấn nút đăng nhập
         document.getElementById('loginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-    
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
-    
+
             // Mã hóa tên người dùng và mật khẩu
             const encryptedUsername = encrypt(username);
             const encryptedPassword = encrypt(password);
-    
+
             // Nếu chọn "Ghi nhớ mật khẩu", lưu thông tin mã hóa vào cookie
             if (rememberMe) {
                 setCookie('username', encryptedUsername, 1);
                 setCookie('password', encryptedPassword, 1);
             }
-    
+
             const loginData = {
-                keyWord: username,
+                username: username,
                 password: password
             };
-    
+
             // Gửi yêu cầu đăng nhập đến API
-            fetch('http://192.168.1.19:8080/api/login/loginUser', {
+            fetch('http://localhost:8080/api/login/loginUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(loginData)
             })
-            .then(response => response.json())
-            .then(data => {
-                const code = data.code;
-                switch (code) {
-                    case 200:
-                        // Nếu đăng nhập thành công, lưu session và chuyển hướng
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        // Nếu có lỗi (400, 401,...), trả về lỗi
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Đăng nhập thất bại');
+                        });
+                    }
+                })
+                .then(data => {
+                    // Lưu thông tin đăng nhập và token vào sessionStorage
+                    sessionStorage.setItem('userSession', JSON.stringify({
+                        username: username,
+                        token: data.token
+                    }));
+
+                    if (!rememberMe) {
+                        setCookie("token", data.token, 2)
+                    } else {
+                        sessionStorage.setItem('token', data.token);
+                    }
+
+                    window.location.href = 'index.html';
+                })
+                .catch(error => {
+                    // Xử lý lỗi khi gửi yêu cầu đăng nhập
+                    console.error('Lỗi khi gửi yêu cầu đăng nhập:', error);
+                    // Xóa cookie nếu có lỗi
+                    deleteCookie('username');
+                    deleteCookie('password');
+                    showErrorModal(error.message);
+                });
+        });
+
+        // Giải mã thông tin từ cookie khi trang được tải
+        document.addEventListener('DOMContentLoaded', function () {
+            const encryptedUsername = getCookie('username');
+            const encryptedPassword = getCookie('password');
+
+            if (encryptedUsername && encryptedPassword) {
+                const username = decrypt(encryptedUsername);
+                const password = decrypt(encryptedPassword);
+
+                autoLogin(username, password);
+            }
+        });
+
+        // Hàm tự động đăng nhập
+        function autoLogin(username, password) {
+            const loginData = {
+                username: username,
+                password: password
+            };
+    
+            fetch('http://localhost:8080/api/login/loginUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
                         sessionStorage.setItem('userSession', JSON.stringify({
                             username: username,
                             token: data.token
                         }));
                         window.location.href = 'index.html';
-                        break;
-                    case 404:
-                        showErrorModal('Không tìm thấy người dùng.');
-                        break;
-                    case 403:
-                        showErrorModal('Mật khẩu không đúng.');
-                        break;
-                    case 401:
-                        showErrorModal('Đăng nhập không hợp lệ.');
-                        break;
-                    default:
-                        showErrorModal('Lỗi không xác định.');
-                        break;
-                }
-    
-                // Nếu đăng nhập không thành công, xóa cookie
-                if (code !== 200) {
+                    } else {
+                        // Xóa cookie nếu đăng nhập tự động thất bại
+                        deleteCookie('username');
+                        deleteCookie('password');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi gửi yêu cầu đăng nhập tự động:', error);
                     deleteCookie('username');
                     deleteCookie('password');
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi khi gửi yêu cầu đăng nhập:', error);
-                deleteCookie('username');
-                deleteCookie('password');
-                showErrorModal('Lỗi kết nối.');
-            });
-        });
-    
-        // Giải mã thông tin từ cookie khi trang được tải
-        document.addEventListener('DOMContentLoaded', function () {
-            const encryptedUsername = getCookie('username');
-            const encryptedPassword = getCookie('password');
-    
-            if (encryptedUsername && encryptedPassword) {
-                const username = decrypt(encryptedUsername);
-                const password = decrypt(encryptedPassword);
-    
-                autoLogin(username, password);
-            }
-        });
-    
-        // Hàm tự động đăng nhập
-        function autoLogin(username, password) {
-            const loginData = {
-                keyWord: username,
-                password: password
-            };
-    
-            fetch('http://192.168.1.19:8080/api/login/loginUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(loginData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) {
-                    sessionStorage.setItem('userSession', JSON.stringify({
-                        username: username,
-                        token: data.token
-                    }));
-                    window.location.href = 'index.html';
-                } else {
-                    // Xóa cookie nếu đăng nhập tự động thất bại
-                    deleteCookie('username');
-                    deleteCookie('password');
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi khi gửi yêu cầu đăng nhập tự động:', error);
-                deleteCookie('username');
-                deleteCookie('password');
-            });
+                });
         }
-    
+
         // Hàm mã hóa
         function encrypt(data) {
             return CryptoJS.AES.encrypt(data, secretKey).toString();
         }
-    
+
         // Hàm giải mã
         function decrypt(encryptedData) {
             const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
             return bytes.toString(CryptoJS.enc.Utf8);
         }
-    
+
         // Hàm thiết lập cookie
         function setCookie(name, value, days) {
             const date = new Date();
@@ -202,7 +220,7 @@
             const expires = "expires=" + date.toUTCString();
             document.cookie = name + "=" + value + ";" + expires + ";path=/";
         }
-    
+
         // Hàm lấy cookie
         function getCookie(name) {
             const nameEQ = name + "=";
@@ -215,12 +233,12 @@
             }
             return null;
         }
-    
+
         // Hàm xóa cookie
         function deleteCookie(name) {
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
         }
-    
+
         // Hàm hiển thị modal thông báo lỗi
         function showErrorModal(message) {
             const errorMessageElement = document.getElementById('errorMessage');
@@ -229,8 +247,8 @@
             errorModal.show();
         }
     </script>
-    
-    
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 

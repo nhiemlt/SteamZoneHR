@@ -114,7 +114,7 @@ app.controller('allowancesController', function ($scope, $http) {
             const endDate = new Date($scope.newEmployeeAllownace.endDate);
 
             if (endDate < startDate) {
-                alert("Lỗi: Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
+                showAlert("Lỗi","Ngày kết thúc không được nhỏ hơn ngày bắt đầu.", "error");
                 return; // Dừng hàm nếu ngày kết thúc không hợp lệ
             }
         }
@@ -122,39 +122,42 @@ app.controller('allowancesController', function ($scope, $http) {
         if ($scope.addEmployeeForm.$valid) {
             $http.post(`${domain}/api/employee-allowances/add-staff`, $scope.newEmployeeAllownace)
                 .then(response => {
-                    console.log("Đã thêm phụ cấp nhân viên thành công", response.data);
+                    showAlert("Thàng công","Thêm phụ cấp cho nhân thành công","success");
                     $scope.getEmployeeAllowances();
                     $('#addModal').modal('hide');
                 })
                 .catch(error => {
-                    console.error("Lỗi khi thêm phụ cấp nhân viên:", error);
                     // Kiểm tra lỗi trùng lặp
                     if (error.data && error.data.message && error.data.message.includes("Duplicate entry")) {
-                        alert("Lỗi: Nhân viên và phụ cấp này đã tồn tại. Vui lòng chọn dữ liệu khác.");
+                        showAlert("Lỗi","Nhân viên và phụ cấp này đã tồn tại. Vui lòng chọn dữ liệu khác.", "error");
                     } else {
                         const errorMessage = error.data && error.data.message ? error.data.message : "Có lỗi xảy ra, vui lòng kiểm tra lại.";
-                        alert(`Lỗi: ${errorMessage}`);
+                        showAlert("Lỗi",errorMessage, "error");
                     }
                 });
         } else {
-            alert("Vui lòng nhập đầy đủ thông tin.");
+            showAlert("Lỗi","Vui lòng nhập đầy đủ thông tin.", "error");
         }
     };
     // thêm phụ cấp
     $scope.addAllowance = () => {
-        const amount = $scope.newAllowance.amount;
-        if (isNaN(amount) || amount <= 0) {
-            alert("Số tiền phải lớn hơn không.");
+        if (!$scope.selectAllowance.allowanceName || !$scope.selectAllowance.amount) {
+            showAlert("Lỗi","Vui lòng điền đầy đủ thông tin.", "error");
             return;
         }
+        const amount = $scope.newAllowance.amount;
+        if (isNaN(amount) || amount <= 0) {
+            showAlert("Lỗi","Số tiền phải lớn hơn không.", "error");
+            return;
+        }
+        
         $http.post(`${domain}/api/allowance/create`, $scope.newAllowance)
             .then(response => {
                 $scope.getAllowances(); // Cập nhật danh sách phụ cấp
+                showAlert("Thàng công","Thêm phụ cấp thành công","success");
                 $('#addAllowanceModal').modal('hide'); // Đóng modal sau khi thêm thành công
             })
             .catch(error => {
-                console.error("Lỗi khi thêm phụ cấp:", error);
-
                 // Lấy thông báo lỗi từ server
                 let errorMessage = "Có lỗi xảy ra, vui lòng thử lại.";
                 if (error.data && error.data.error) {
@@ -164,7 +167,7 @@ app.controller('allowancesController', function ($scope, $http) {
                 }
 
                 // Hiển thị thông báo lỗi cho người dùng
-                alert(`Lỗi: ${errorMessage}`);
+                showAlert("Lỗi",errorMessage, "error");
             });
     };
 
@@ -176,7 +179,7 @@ app.controller('allowancesController', function ($scope, $http) {
             const endDate = new Date($scope.selectedEmployeeAllownace.endDate);
 
             if (endDate < startDate) {
-                alert("Lỗi: Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
+                showAlert("Lỗi","Ngày kết thúc không được nhỏ hơn ngày bắt đầu.", "error");
                 return; // Dừng hàm nếu ngày kết thúc không hợp lệ
             }
         }
@@ -196,23 +199,22 @@ app.controller('allowancesController', function ($scope, $http) {
         if ($scope.selectedEmployeeAllownace.employeeID) {
             $scope.selectedEmployeeAllownace.employeeID = $scope.selectedEmployeeAllownace.employeeID.id;
         }
-        if ($scope.selectedEmployeeAllownace.allowanceId) {
-            $scope.selectedEmployeeAllownace.allowanceID = $scope.selectedEmployeeAllownace.allowanceId.id;
+        if ($scope.selectedEmployeeAllownace.allowanceID) {
+            $scope.selectedEmployeeAllownace.allowanceID = $scope.selectedEmployeeAllownace.allowanceID.id;
         }
 
         // Gửi yêu cầu PUT
         $http.put(`${domain}/api/employee-allowances/update-staff`, $scope.selectedEmployeeAllownace)
             .then(response => {
                 $scope.getEmployeeAllowances(); // Cập nhật danh sách trợ cấp
-                alert("Cập nhật thành công");
+                showAlert("Thàng công","Cập nhật thành công","success");
                 $('#updateModal').modal('hide'); // Đóng modal sau khi cập nhật
             })
             .catch(error => {
                 if (error.data && error.data.message && error.data.message.includes("Duplicate entry")) {
-                    alert("Lỗi: Nhân viên và phụ cấp đã tồn tại. Vui lòng chọn dữ liệu khác.");
+                    showAlert("Lỗi","Nhân viên và phụ cấp đã tồn tại. Vui lòng chọn dữ liệu khác.", "error");
                 } else {
-                    console.error('Lỗi khi cập nhật nhân viên:', error);
-                    alert("Lỗi hệ thống: Không thể cập nhật dữ liệu. Vui lòng thử lại sau.");
+                    showAlert("Lỗi","Lỗi hệ thống: Không thể cập nhật dữ liệu. Vui lòng thử lại sau.", "error");
                 }
             });
     };
@@ -221,14 +223,14 @@ app.controller('allowancesController', function ($scope, $http) {
     $scope.updateAllowance = () => {
         // Kiểm tra nếu các trường không được để trống
         if (!$scope.selectAllowance.allowanceName || !$scope.selectAllowance.amount) {
-            alert("Vui lòng điền đầy đủ thông tin.");
+            showAlert("Lỗi","Vui lòng điền đầy đủ thông tin.", "error");
             return;
         }
 
         // Kiểm tra nếu số tiền là số và là số dương
         const amount = $scope.selectAllowance.amount;
         if (isNaN(amount) || amount <= 0) {
-            alert("Số tiền phải lớn hơn không.");
+            showAlert("Lỗi","Số tiền phải lớn hơn không.", "error");
             return;
         }
 
@@ -238,15 +240,22 @@ app.controller('allowancesController', function ($scope, $http) {
                 $scope.getAllowances(); // Cập nhật danh sách phụ cấp sau khi thành công
                 $scope.getEmployeeAllowances();
                 $('#updateAllowanceModal').modal('hide'); // Đóng modal sau khi cập nhật
-                alert("Cập nhật thành công!");
+                showAlert("Thàng công","Cập nhật phụ cấp thành công","success");
             })
             .catch(error => {
                 console.error("Lỗi khi cập nhật phụ cấp:", error);
                 const errorMessage = error.data && error.data.error ? error.data.error : "Có lỗi xảy ra, vui lòng kiểm tra lại.";
-                alert(`Lỗi: ${errorMessage}`);
+                showAlert("Lỗi",errorMessage, "error");
             });
     };
-
+    function showAlert(title, text, icon) {
+        Swal.fire({
+          title: title,
+          text: text,
+          icon: icon,
+        });
+      }
+      
     // Khởi tạo controller
     $scope.init();
 });
