@@ -33,15 +33,13 @@ app.controller("positionController", function ($scope, $http) {
     return Math.ceil($scope.departments.length / $scope.departmentItemsPerPage);
   };
 
-  // Function to get the paginated departments
   $scope.getPaginatedDepartments = function () {
     var start =
       ($scope.currentDepartmentPage - 1) * $scope.departmentItemsPerPage;
     var end = start + $scope.departmentItemsPerPage;
-    return $scope.departments.slice(start, end); // Return the sliced array for the current page
+    return $scope.departments.slice(start, end);
   };
 
-  // Function to change the current page
   $scope.changeDepartmentPage = function (page) {
     if (page >= 1 && page <= $scope.getTotalDepartmentPages()) {
       $scope.currentDepartmentPage = page;
@@ -177,19 +175,178 @@ app.controller("positionController", function ($scope, $http) {
       }
     });
   };
-
-  //  chức vụ
+  // phần chức vụ
   $scope.getActiveDepartments = function () {
     $http
       .get(baseUrl + "/active")
       .then(function (response) {
         $scope.activeDepartments = response.data;
-        console.log($scope.activeDepartments);
       })
       .catch(function (error) {
         Swal.fire("Lỗi", "Không thể lấy danh sách phòng ban.", "error");
       });
   };
-  $scope.getDepartments();
+  $scope.positions = [];
+  $scope.currentPositionPage = 1;
+  $scope.positionItemsPerPage = 5;
+  $scope.selectedPosition = {};
+  $scope.newPosition = {};
+  $scope.positionToUpdate = {};
+  $scope.getActiveDepartment2s = function () {
+    $http
+      .get(baseUrl + "/active")
+      .then(function (response) {
+        $scope.activeDepartment2s = response.data;
+      })
+      .catch(function (error) {
+        Swal.fire("Lỗi", "Không thể lấy danh sách phòng ban.", "error");
+      });
+  };
+  $scope.getPositions = function () {
+    $http
+      .get(baseURLP)
+      .then((response) => {
+        $scope.positions = response.data;
+        $scope.totalPositionPages = Math.ceil(
+          $scope.positions.length / $scope.positionItemsPerPage
+        );
+        // Cập nhật lại chức vụ đã phân trang
+        $scope.getPaginatedPositions();
+      })
+      .catch((error) => {
+        console.error("Error fetching positions:", error);
+      });
+  };
+
+  // Hàm tính toán chức vụ theo trang hiện tại
+  $scope.getPaginatedPositions = function () {
+    var start = ($scope.currentPositionPage - 1) * $scope.positionItemsPerPage;
+    var end = start + $scope.positionItemsPerPage;
+    $scope.paginatedPositions = $scope.positions.slice(start, end); // Dữ liệu cho trang hiện tại
+  };
+
+  // Hàm thay đổi trang
+  $scope.changePositionPage = function (page) {
+    if (page >= 1 && page <= $scope.totalPositionPages) {
+      $scope.currentPositionPage = page;
+      $scope.getPaginatedPositions(); // Lấy dữ liệu cho trang mới
+    }
+  };
+  //  thêm
+  $scope.addPosition = function () {
+    if (
+      !$scope.newPosition.positionName ||
+      $scope.newPosition.positionName.length < 3
+    ) {
+      Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
+      return;
+    }
+    if (!$scope.selectedDepartment) {
+      Swal.fire("Lỗi", "Vui lòng chọn phòng ban.", "error");
+      return;
+    }
+    const positionModel = {
+      positionName: $scope.newPosition.positionName,
+      departmentId: $scope.selectedDepartment,
+    };
+    $http
+      .post(baseURLP, positionModel) // Điều chỉnh endpoint theo API của bạn
+      .then((response) => {
+        Swal.fire("Thành công", "Chức vụ đã được thêm thành công.", "success");
+        $scope.newPosition.positionName = "";
+        $scope.selectedDepartment = "";
+        $scope.getPositions();
+      })
+      .catch((error) => {
+        console.error("Lỗi khi thêm chức vụ:", error);
+      });
+  };
+  $scope.deletePosition = function (positionId) {
+    // Xác nhận trước khi xóa
+    Swal.fire({
+      title: "Bạn có chắc chắn muốn xóa chức vụ này?",
+      text: "Chức vụ sẽ bị xóa vĩnh viễn!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Gửi yêu cầu xóa tới backend
+        $http
+          .delete(baseURLP + "/" + positionId)
+          .then((response) => {
+            Swal.fire("Thành công", response.data, "success");
+            $scope.getPositions(); // Cập nhật danh sách các chức vụ
+          })
+          .catch((error) => {
+            console.error("Lỗi khi xóa chức vụ:", error);
+            if (error.status === 409) {
+              Swal.fire(
+                "Lỗi",
+                "Không thể xóa chức vụ này vì có nhân viên đang sử dụng nó.",
+                "error"
+              );
+            } else if (error.status === 404) {
+              Swal.fire("Lỗi", "Không tìm thấy chức vụ này.", "error");
+            } else {
+              console.log("à nhon xê ô" + error);
+
+              Swal.fire(
+                "Lỗi",
+                "Có lỗi xảy ra trong quá trình xóa chức vụ.",
+                "error"
+              );
+            }
+          });
+      }
+    });
+  };
+
+  //
+  // Lấy thông tin chức vụ để cập nhật
+  $scope.loadPositionForUpdate = function (positionId) {
+    $http
+      .get(baseURLP + "/" + positionId)
+      .then(function (response) {
+        $scope.positionToUpdate = response.data;
+        // Mở modal cập nhật
+        $("#updatePositionModal").modal("show");
+      })
+      .catch(function (error) {
+        console.error("Lỗi khi lấy thông tin chức vụ:", error);
+        Swal.fire("Lỗi", "Không thể lấy thông tin chức vụ.", "error");
+      });
+  };
+
+  // Cập nhật chức vụ
+  $scope.updatePosition = function () {
+    if (
+      !$scope.positionToUpdate.positionName ||
+      !$scope.positionToUpdate.departmentId
+    ) {
+      Swal.fire(
+        "Lỗi",
+        "Vui lòng điền đầy đủ thông tin chức vụ và phòng ban.",
+        "error"
+      );
+      return;
+    }
+    // Gửi yêu cầu PUT tới API
+    $http
+      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
+      .then(function (response) {
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật.", "success");
+        $("#updatePositionModal").modal("hide"); // Đóng modal
+        $scope.getPositions(); // Cập nhật lại danh sách chức vụ
+      })
+      .catch(function (error) {
+        console.error("Lỗi khi cập nhật chức vụ:", error);
+        Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ.", "error");
+      });
+  };
   $scope.getActiveDepartments();
+  $scope.getDepartments();
+  $scope.getPositions();
+  $scope.getActiveDepartment2s();
 });
