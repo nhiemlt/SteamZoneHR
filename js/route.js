@@ -14,7 +14,8 @@ app.config(function($routeProvider, $locationProvider) {
         { path: "/contracts", template: "contracts.html", controller: "contractController" },
         { path: "/overtime", template: "overtime.html", controller: "overtimeController" },
         { path: "/overtime-schedule", template: "overtime-schedule.html", controller: "overtimeScheduleController" },
-        { path: "/allowances", template: "allowances.html", controller: "allowancesController" }
+        { path: "/allowances", template: "allowances.html", controller: "allowancesController" },
+        { path: "/leave-records", template: "leave-records.html", controller: "leaveRecordController" }
     ];
 
     // Lặp qua mảng để cấu hình các route

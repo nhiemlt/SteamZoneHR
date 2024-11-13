@@ -92,6 +92,8 @@
             class="app-menu__label">Danh sách hợp đồng</span></a></li></a></li>
       <li><a class="app-menu__item" href="/allowances"><i class="app-menu__icon bi bi-wallet2"></i><span
             class="app-menu__label">Quản lý phụ cấp</span></a></li></a></li>
+      <li><a class="app-menu__item" href="/leave-records"><i class="app-menu__icon bi bi-card-checklist"></i><span
+            class="app-menu__label">Quản lý nghỉ phép</span></a></li></a></li>
     </ul>
 
   </aside>
@@ -116,66 +118,67 @@
   <script src="js/route/positionController.js"></script>
   <script src="js/route/positionDepartmentController.js"></script>
   <script src="js/route/salaryStatisticsController.js"></script>
+  <script src="js/route/leaveRecordController.js"></script>
 
   <script src="js/plugins/datatables.js" rel="stylesheet"></script>
-<!-- Thêm vào phần <head> hoặc trước khi bạn tải script AngularJS -->
+  <!-- Thêm vào phần <head> hoặc trước khi bạn tải script AngularJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
   <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        // Lấy thông tin người dùng từ sessionStorage
-        var userSession = JSON.parse(sessionStorage.getItem('userSession'));
+    document.addEventListener('DOMContentLoaded', function () {
+      // Lấy thông tin người dùng từ sessionStorage
+      var userSession = JSON.parse(sessionStorage.getItem('userSession'));
 
-        if (!userSession) {
-            // Nếu không có thông tin đăng nhập hợp lệ, chuyển hướng đến trang đăng nhập
-            window.location.href = 'login.html';
-        } else {
-            // Nếu có thông tin đăng nhập, gọi API để lấy thông tin người dùng
-            const email = userSession.username;
+      if (!userSession) {
+        // Nếu không có thông tin đăng nhập hợp lệ, chuyển hướng đến trang đăng nhập
+        window.location.href = 'login.html';
+      } else {
+        // Nếu có thông tin đăng nhập, gọi API để lấy thông tin người dùng
+        const email = userSession.username;
 
-            fetch(`http://localhost:8080/api/employee/get-by-email?email=${encodeURIComponent(email)}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Không tìm thấy người dùng");
-                    return response.json();
-                })
-                .then(data => {
-                    // Cập nhật giao diện với dữ liệu người dùng
-                    document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
-                    document.querySelector(".app-sidebar__user-name").textContent = data.fullName || "Tên không có sẵn";
-                    document.querySelector(".app-sidebar__user-designation").textContent = data.positionDepartmentID.positionID.positionName || "Vị trí không có sẵn";
-                    document.getElementById("department").textContent = data.positionDepartmentID.departmentID.departmentName || "Phòng ban không có sẵn";
-                })
-                .catch(error => console.error("Lỗi khi lấy thông tin người dùng:", error));
-        }
+        fetch(`http://localhost:8080/api/employee/get-by-email?email=${encodeURIComponent(email)}`)
+          .then(response => {
+            if (!response.ok) throw new Error("Không tìm thấy người dùng");
+            return response.json();
+          })
+          .then(data => {
+            // Cập nhật giao diện với dữ liệu người dùng
+            document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
+            document.querySelector(".app-sidebar__user-name").textContent = data.fullName || "Tên không có sẵn";
+            document.querySelector(".app-sidebar__user-designation").textContent = data.positionDepartmentID.positionID.positionName || "Vị trí không có sẵn";
+            document.getElementById("department").textContent = data.positionDepartmentID.departmentID.departmentName || "Phòng ban không có sẵn";
+          })
+          .catch(error => console.error("Lỗi khi lấy thông tin người dùng:", error));
+      }
     });
 
     function logout() {
-        // Xóa tất cả cookies (bao gồm cookie lưu trữ username và password)
-        document.cookie.split(";").forEach(function(c) {
-            document.cookie = c.trim().replace(/^.+/, "") + ";expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-        });
+      // Xóa tất cả cookies (bao gồm cookie lưu trữ username và password)
+      document.cookie.split(";").forEach(function (c) {
+        document.cookie = c.trim().replace(/^.+/, "") + ";expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+      });
 
-        // Xóa riêng cookie của username và password (nếu có)
-        deleteCookie('username');
-        deleteCookie('password');
+      // Xóa riêng cookie của username và password (nếu có)
+      deleteCookie('username');
+      deleteCookie('password');
 
-        // Xóa token trong localStorage và sessionStorage
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
+      // Xóa token trong localStorage và sessionStorage
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
 
-        // Xóa tất cả sessionStorage và localStorage (nếu có dữ liệu khác)
-        sessionStorage.clear();
-        localStorage.clear();
+      // Xóa tất cả sessionStorage và localStorage (nếu có dữ liệu khác)
+      sessionStorage.clear();
+      localStorage.clear();
 
-        // Chuyển hướng người dùng về trang đăng nhập
-        window.location.href = '../login.html';
+      // Chuyển hướng người dùng về trang đăng nhập
+      window.location.href = '../login.html';
     }
 
     // Hàm xóa cookie
     function deleteCookie(name) {
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
     }
-</script>
+  </script>
 
 
 
@@ -196,4 +199,5 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </html>

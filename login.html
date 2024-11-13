@@ -99,28 +99,11 @@
             .then(response => response.json())
             .then(data => {
                 const code = data.code;
-                switch (code) {
-                    case 200:
-                        // Nếu đăng nhập thành công, lưu session và chuyển hướng
-                        sessionStorage.setItem('userSession', JSON.stringify({
+                sessionStorage.setItem('userSession', JSON.stringify({
                             username: username,
                             token: data.token
                         }));
                         window.location.href = 'index.html';
-                        break;
-                    case 404:
-                        showErrorModal('Không tìm thấy người dùng.');
-                        break;
-                    case 403:
-                        showErrorModal('Mật khẩu không đúng.');
-                        break;
-                    case 401:
-                        showErrorModal('Đăng nhập không hợp lệ.');
-                        break;
-                    default:
-                        showErrorModal('Lỗi không xác định.');
-                        break;
-                }
     
                 // Nếu đăng nhập không thành công, xóa cookie
                 if (code !== 200) {
