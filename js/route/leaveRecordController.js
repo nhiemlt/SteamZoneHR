@@ -132,7 +132,6 @@ app.controller('leaveRecordController', function ($scope, $http) {
                 console.error("Error fetching leave record:", error);
             });
     };
-
     // Hàm tạo mới bản ghi nghỉ phép
     $scope.createLeaverecord = function () {
         const leaverecordData = {
@@ -140,10 +139,11 @@ app.controller('leaveRecordController', function ($scope, $http) {
             quantity: $scope.newLeaverecord.quantity || null,
             fromDate: $scope.newLeaverecord.fromDate ? new Date($scope.newLeaverecord.fromDate).toISOString() : null,
             toDate: $scope.newLeaverecord.toDate ? new Date($scope.newLeaverecord.toDate).toISOString() : null,
-            isAccept: $scope.newLeaverecord.isAccept || null,
+            isAccept: $scope.newLeaverecord.isAccept, // Lưu giá trị isAccept
         };
 
-        if (!leaverecordData.employeeID || !leaverecordData.fromDate || !leaverecordData.toDate || !leaverecordData.quantity || !leaverecordData.isAccept) {
+        // Kiểm tra dữ liệu nhập vào
+        if (!leaverecordData.employeeID || !leaverecordData.fromDate || !leaverecordData.toDate || !leaverecordData.quantity || leaverecordData.isAccept === undefined) {
             Swal.fire({
                 title: "Lỗi",
                 text: "Vui lòng điền đầy đủ các trường bắt buộc.",
@@ -152,6 +152,7 @@ app.controller('leaveRecordController', function ($scope, $http) {
             return;
         }
 
+        // Gửi dữ liệu lên server
         $http.post(baseUrl, leaverecordData)
             .then(function (response) {
                 console.log("Response:", response);  // Kiểm tra phản hồi từ server
@@ -200,7 +201,6 @@ app.controller('leaveRecordController', function ($scope, $http) {
                 // Lưu lại lỗi để xử lý sau (nếu cần)
                 $scope.validationErrors = error.response ? error.response.data : null;
             });
-
     }
 
 
