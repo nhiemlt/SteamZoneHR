@@ -112,7 +112,7 @@
             };
 
             // Gửi yêu cầu đăng nhập đến API
-            fetch('http://localhost:8080/api/login/loginUser', {
+            fetch('http://localhost:8080/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -173,8 +173,8 @@
                 username: username,
                 password: password
             };
-    
-            fetch('http://localhost:8080/api/login/loginUser', {
+
+            fetch('http://localhost:8080/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
