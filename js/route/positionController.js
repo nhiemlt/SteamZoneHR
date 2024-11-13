@@ -261,40 +261,47 @@ app.controller("positionController", function ($scope, $http) {
         console.error("Lỗi khi thêm chức vụ:", error);
       });
   };
-
   $scope.deletePosition = function (positionId) {
+    // Xác nhận trước khi xóa
     Swal.fire({
-        title: "Bạn có chắc chắn muốn xóa chức vụ này?",
-        text: "Chức vụ sẽ bị xóa vĩnh viễn!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
+      title: "Bạn có chắc chắn muốn xóa chức vụ này?",
+      text: "Chức vụ sẽ bị xóa vĩnh viễn!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
     }).then((result) => {
-        if (result.isConfirmed) {
-            $http.delete(baseURLP + "/" + positionId)
-                .then((response) => {
-                    // Kiểm tra nếu response.data là một chuỗi
-                    const message = typeof response.data === 'string' ? response.data : response.data.message;
-                    Swal.fire("Thành công", message, "success");
-                    $scope.getPositions(); // Cập nhật danh sách các chức vụ
-                })
-                .catch((error) => {
-                    console.log(error);
-                    const errorMessage = typeof error.data === 'string' ? error.data : error.data.message;
-                    
-                    if (error.status === 409) {
-                        Swal.fire("Lỗi", errorMessage, "error");
-                    } else if (error.status === 404) {
-                        Swal.fire("Lỗi", errorMessage, "error");
-                    } else {
-                        Swal.fire("Lỗi", "Có lỗi xảy ra trong quá trình xóa chức vụ.", "error");
-                    }
-                });
-        }
-    });
-};
+      if (result.isConfirmed) {
+        // Gửi yêu cầu xóa tới backend
+        $http
+          .delete(baseURLP + "/" + positionId)
+          .then((response) => {
+            Swal.fire("Thành công", response.data, "success");
+            $scope.getPositions(); // Cập nhật danh sách các chức vụ
+          })
+          .catch((error) => {
+            console.error("Lỗi khi xóa chức vụ:", error);
+            if (error.status === 409) {
+              Swal.fire(
+                "Lỗi",
+                "Không thể xóa chức vụ này vì có nhân viên đang sử dụng nó.",
+                "error"
+              );
+            } else if (error.status === 404) {
+              Swal.fire("Lỗi", "Không tìm thấy chức vụ này.", "error");
+            } else {
+              console.log("à nhon xê ô" + error);
 
+              Swal.fire(
+                "Lỗi",
+                "Có lỗi xảy ra trong quá trình xóa chức vụ.",
+                "error"
+              );
+            }
+          });
+      }
+    });
+  };
 
   //
   // Lấy thông tin chức vụ để cập nhật
