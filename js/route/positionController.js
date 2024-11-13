@@ -47,6 +47,7 @@ app.controller("positionController", function ($scope, $http) {
   };
   $scope.openUpdateModal = function (department) {
     $scope.selectedDepartment = angular.copy(department);
+
     $("#updateDepartmentModal").modal("show");
   };
   $scope.addDepartment = function () {
@@ -143,9 +144,13 @@ app.controller("positionController", function ($scope, $http) {
         $http
           .delete(`${baseUrl}/${id}`)
           .then((response) => {
+            // Nếu thành công, hiển thị thông báo thành công
+            if (response.data.status === "success") {
               Swal.fire("Thành công", response.data.message, "success");
+
               // Cập nhật lại danh sách phòng ban
               $scope.getDepartments();
+            }
           })
           .catch((error) => {
             let errorMessage = "Không thể xóa phòng ban.";
@@ -246,7 +251,7 @@ app.controller("positionController", function ($scope, $http) {
       departmentId: $scope.selectedDepartment,
     };
     $http
-      .post(baseURLP, positionModel) // Điều chỉnh endpoint theo API của bạn
+      .post(baseURLP, positionModel)
       .then((response) => {
         Swal.fire("Thành công", "Chức vụ đã được thêm thành công.", "success");
         $scope.newPosition.positionName = "";
@@ -257,54 +262,47 @@ app.controller("positionController", function ($scope, $http) {
         console.error("Lỗi khi thêm chức vụ:", error);
       });
   };
-
-
-$scope.deletePosition = function (positionId) {
+  $scope.deletePosition = function (positionId) {
     // Xác nhận trước khi xóa
     Swal.fire({
-        title: "Bạn có chắc chắn muốn xóa chức vụ này?",
-        text: "Chức vụ sẽ bị xóa vĩnh viễn!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
+      title: "Bạn có chắc chắn muốn xóa chức vụ này?",
+      text: "Chức vụ sẽ bị xóa vĩnh viễn!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
     }).then((result) => {
-        if (result.isConfirmed) {
-            // Gửi yêu cầu xóa tới backend
-            $http.delete(baseURLP + "/" + positionId)
-                .then((response) => {
-                    // Kiểm tra nếu response.data là một đối tượng JSON
-                    const message = response.data.message || "Chức vụ đã được xóa thành công.";
-                    Swal.fire("Thành công", message, "success");
-                    $scope.getPositions(); // Cập nhật danh sách các chức vụ
-                })
-                .catch((error) => {
-                    console.log(error);
-                    // Xử lý thông báo lỗi từ backend
-                    let errorMessage = "Có lỗi xảy ra trong quá trình xóa chức vụ.";
+      if (result.isConfirmed) {
+        // Gửi yêu cầu xóa tới backend
+        $http
+          .delete(baseURLP + "/" + positionId)
+          .then((response) => {
+            Swal.fire("Thành công", response.data, "success");
+            $scope.getPositions(); // Cập nhật danh sách các chức vụ
+          })
+          .catch((error) => {
+            console.error("Lỗi khi xóa chức vụ:", error);
+            if (error.status === 409) {
+              Swal.fire(
+                "Lỗi",
+                "Không thể xóa chức vụ này vì có nhân viên đang sử dụng nó.",
+                "error"
+              );
+            } else if (error.status === 404) {
+              Swal.fire("Lỗi", "Không tìm thấy chức vụ này.", "error");
+            } else {
+              console.log("à nhon xê ô" + error);
 
-                    // Kiểm tra lỗi trả về từ backend và lấy thông điệp từ JSON
-                    if (error.data && error.data.message) {
-                        errorMessage = error.data.message;
-                    } else if (error.status === 409) {
-                        // Lỗi khi không thể xóa do nhân viên đang sử dụng chức vụ
-                        errorMessage = "Không thể xóa chức vụ này vì có nhân viên đang sử dụng nó.";
-                    } else if (error.status === 404) {
-                        // Lỗi khi không tìm thấy chức vụ
-                        errorMessage = "Không tìm thấy chức vụ này.";
-                    } else if (error.status === 500) {
-                        // Lỗi nội bộ
-                        errorMessage = "Có lỗi xảy ra trong quá trình xóa chức vụ.";
-                    }
-
-                    Swal.fire("Lỗi", errorMessage, "error");
-                });
-        }
+              Swal.fire(
+                "Lỗi",
+                "Có lỗi xảy ra trong quá trình xóa chức vụ.",
+                "error"
+              );
+            }
+          });
+      }
     });
-};
-
-
-
+  };
 
   //
   // Lấy thông tin chức vụ để cập nhật
@@ -335,17 +333,51 @@ $scope.deletePosition = function (positionId) {
       );
       return;
     }
-    // Gửi yêu cầu PUT tới API
+    console.log("Updating position:", $scope.positionToUpdate); // Add this line to log data
+
     $http
       .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
-      .then(function (response) {
-        Swal.fire("Thành công", "Chức vụ đã được cập nhật.", "success");
-        $("#updatePositionModal").modal("hide"); // Đóng modal
-        $scope.getPositions(); // Cập nhật lại danh sách chức vụ
+      .then((response) => {
+        $("#updatePositionModal").modal("hide");
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
+        $scope.getPositions();
       })
-      .catch(function (error) {
+      .catch((error) => {
+        Swal.fire(
+          "Lỗi",
+          error.data.departmentId || "Không thể cập nhật chức vụ.",
+          "error"
+        );
+        console.error("Error updating position:", error);
+      });
+  };
+  $scope.openUpdateModal = function (position) {
+    $scope.positionToUpdate = angular.copy(position);
+    console.log($scope.positionToUpdate);
+    $("#updatePositionModal").modal("show");
+  };
+
+  // Update position
+  $scope.updatePosition = function () {
+    if (
+      !$scope.positionToUpdate.positionName ||
+      $scope.positionToUpdate.positionName.length < 3
+    ) {
+      Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
+      return;
+    }
+
+    $http
+      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
+      .then((response) => {
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
+        $scope.getPositions(); // Refresh the list
+        $scope.positionToUpdate = {}; // Clear the form
+        $("#updatePositionModal").modal("hide"); // Close modal
+      })
+      .catch((error) => {
         console.error("Lỗi khi cập nhật chức vụ:", error);
-        Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ.", "error");
+        Swal.fire("Lỗi", "Cập nhật chức vụ thất bại!", "error");
       });
   };
   $scope.getActiveDepartments();

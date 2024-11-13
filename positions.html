@@ -219,8 +219,12 @@
                 </td>
                 <td>{{ position.departmentName }}</td>
                 <td class="d-flex justify-content-center">
-                  <button class="btn btn-outline btn-success">Cập nhật</button>
-
+                  <button
+                    class="btn btn-outline btn-success"
+                    ng-click="openUpdateModal(position)"
+                  >
+                    Cập nhật
+                  </button>
                   <button
                     class="btn btn-outline btn-danger"
                     ng-click="deletePosition(position.id)"
@@ -292,11 +296,12 @@
               class="form-control"
               ng-model="positionToUpdate.departmentId"
             >
+              <option value="" selected disabled>Chọn phòng ban</option>
               <option
-                ng-repeat="department in departments"
+                ng-repeat="department in activeDepartment2s"
                 value="{{department.id}}"
               >
-                {{department.name}}
+                {{department.departmentName}}
               </option>
             </select>
           </div>
