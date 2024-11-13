@@ -29,13 +29,11 @@ app.controller('attendanceStatisticsController', function ($scope, $http) {
   $scope.totalPages = 0; // Tổng số trang
 
   // Hàm lấy dữ liệu chấm công
-  $scope.fetchAttendanceData = function (month, year) {
-      const apiUrl = 'http://localhost:8080/api/contracts/getAttendanceStatistics';
-      const config = {
-          params: { month: month, year: year }
-      };
+  $scope.fetchAttendanceData = function () {
+      const apiUrl = 'http://localhost:8080/api/employees/getAlls';
+      
 
-      $http.get(apiUrl, config)
+      $http.get(apiUrl)
           .then(function (response) {
               $scope.employees = response.data;
               // Tính tổng số trang
@@ -60,5 +58,5 @@ app.controller('attendanceStatisticsController', function ($scope, $http) {
   };
 
   // Gọi hàm fetchAttendanceData ngay khi controller được khởi động
-  $scope.fetchAttendanceData($scope.selectedMonth, $scope.selectedYear);
+  $scope.fetchAttendanceData();
 });

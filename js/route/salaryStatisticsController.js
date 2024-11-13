@@ -2,7 +2,7 @@ app.controller('salaryStatisticsController', function($scope, $http) {
   // Dữ liệu mẫu cho bảng
   $scope.employees = []; 
   $scope.fetchAttendanceData = function () {
-    const apiUrl = 'http://localhost:8080/api/contracts/getEmployeeTotalAmount';
+    const apiUrl = 'http://localhost:8080/api/employees/getSalary';
 
     $http.get(apiUrl)
         .then(function (response) {
