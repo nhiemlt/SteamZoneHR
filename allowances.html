@@ -5,344 +5,438 @@
     </div>
     <ul class="app-breadcrumb breadcrumb">
       <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-      <li class="breadcrumb-item"><a href="#">Phụ cấp & Nhân viên phụ
+      <li class="breadcrumb-item"><a href="#">Phụ cấp
           cấp</a></li>
     </ul>
   </div>
+  <!-- Phần nhân viên phụ cấp -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+        data-bs-target="#home-tab-pane" type="button" role="tab"
+        aria-controls="home-tab-pane" aria-selected="true">Phụ cấp</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+        data-bs-target="#profile-tab-pane" type="button" role="tab"
+        aria-controls="profile-tab-pane" aria-selected="false">Danh sách nhân
+        viên phụ cấp</button>
+    </li>
+  </ul>
+
   <div class="row" style="display: flex; min-height: 800px;">
-    <!-- Phần nhân viên phụ cấp -->
-    <div class="col-md-6 d-flex flex-column justify-content-between flex-grow-1">
-      <div class="tile">
-        <h3 class="tile-title">Nhân viên phụ cấp</h3>
-        <form
-          style="max-height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-          <!-- Tìm kiếm nhân viên -->
-          <div class="row mb-3">
-            <div class="col-md-8">
-              <label class="form-label">Tìm kiếm nhân viên:</label>
-              <input type="text" class="form-control" placeholder="Nhập tên nhân viên" ng-model="searchEmployee">
-            </div>
-          </div>
-          <div class="mt-3 mb-3">
-            <button type="button" class="btn btn-outline btn-primary" ng-click="openAddModal()">Thêm</button>
-          </div>
-    
-          <h3 class="tile-title">Danh sách nhân viên phụ cấp</h3>
-          
-          <!-- Bảng nhân viên phụ cấp, sử dụng table-responsive để giữ bảng không bị bẻ khi thu nhỏ -->
-          <div class="table-responsive">
-            <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="phongBanTable">
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên nhân viên</th>
-                  <th>Tên phụ cấp</th>
-                  <th>Ngày bắt đầu</th>
-                  <th>Ngày kết thúc</th>
-                  <th>Số tiền</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="employeeAllowance in employeeAllowances | filter:searchEmployee | limitTo:itemsPerPage:(employeeCurrentPage-1)*itemsPerPage">
-                  <td>{{$index + 1}}</td>
-                  <td>{{employeeAllowance.employeeID.fullName}}</td>
-                  <td>{{employeeAllowance.allowanceID.allowanceName}}</td>
-                  <td>{{employeeAllowance.startDate | date:'dd/MM/yyyy'}}</td>
-                  <td>{{employeeAllowance.endDate | date: 'dd/MM/yyyy'}}</td>
-                  <td>{{employeeAllowance.amount | currency: '' : 0}}</td>
-                  <td class="text-center">
-                    <button class="btn btn-outline btn-success" ng-click="openUpdateModal(employeeAllowance)">Sửa</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-    
-          <!-- Phân trang cho nhân viên phụ cấp -->
-          <div class="pagination-container">
-            <ul class="pagination justify-content-center">
-              <li class="page-item" ng-class="{'disabled': employeeCurrentPage == 1}">
-                <button class="page-link" ng-click="employeeCurrentPage = employeeCurrentPage - 1">Trang trước</button>
-              </li>
-              <li class="page-item disabled">
-                <span class="page-link">Trang {{employeeCurrentPage}} / {{totalEmployeePages}}</span>
-              </li>
-              <li class="page-item" ng-class="{'disabled': employeeCurrentPage == totalEmployeePages}">
-                <button class="page-link" ng-click="employeeCurrentPage = employeeCurrentPage + 1">Trang sau</button>
-              </li>
-            </ul>
-          </div>
-        </form>
-      </div>
-    </div>
-    
-    <!-- Phần phụ cấp -->
-    <div
-      class="col-md-6 d-flex flex-column justify-content-between flex-grow-1">
-      <div class="tile">
-        <h3 class="tile-title">Phụ cấp</h3>
-        <form
-          style="max-height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-          <!-- Tìm kiếm phụ cấp -->
-          <div class="row mb-3">
-            <div class="col-md-8">
-              <label class="form-label">Tìm kiếm phụ cấp:</label>
-              <input type="text" class="form-control"
-                placeholder="Nhập tên phụ cấp" ng-model="searchAllowance">
-            </div>
-          </div>
-          <div class="mt-3 mb-3">
-            <button type="button" class="btn btn-outline btn-primary"
-              ng-click="openAddAllowanceModal()">Thêm</button>
-          </div>
-
-          <h3 class="tile-title">Danh sách phụ cấp</h3>
-          <table class="table table-hover table-bordered table-sm"
-            style="font-size: 12px;" id="allowanceTable">
-            <thead>
-              <tr>
-                <th>STT</th>
-                <th>Tên phụ cấp</th>
-                <th>Số tiền</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                ng-repeat="allowance in allowances | filter:searchAllowance | limitTo:itemsPerPage:(allowanceCurrentPage-1)*itemsPerPage">
-                <td>{{$index + 1}}</td>
-                <td>{{allowance.allowanceName}}</td>
-                <td>{{allowance.amount | currency: '' : 0}}</td>
-                <td class="text-center">
-                  <button class="btn btn-outline btn-success"
-                    ng-click="openUpdateAllowanceModal(allowance)">Sửa</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Phân trang cho phụ cấp -->
-          <div class="pagination-container">
-            <ul class="pagination justify-content-center">
-              <li class="page-item"
-                ng-class="{'disabled': allowanceCurrentPage == 1}">
-                <button class="page-link"
-                  ng-click="allowanceCurrentPage = allowanceCurrentPage - 1">Trang
-                  trước</button>
-              </li>
-              <li class="page-item disabled">
-                <span class="page-link">Trang {{allowanceCurrentPage}} /
-                  {{totalAllowancePages}}</span>
-              </li>
-              <li class="page-item"
-                ng-class="{'disabled': allowanceCurrentPage == totalAllowancePages}">
-                <button class="page-link"
-                  ng-click="allowanceCurrentPage = allowanceCurrentPage + 1">Trang
-                  sau</button>
-              </li>
-            </ul>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- modal thêm nhân viên phụ cấp -->
-    <div class="modal fade" id="addModal" tabindex="-1"
-      aria-labelledby="addModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addModalLabel">Thêm nhân viên phụ
-              cấp</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- Form thêm nhân viên phụ cấp -->
-            <form name="addEmployeeForm" novalidate>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="new_nhanvien" class="form-label">Nhân viên</label>
-                  <select class="form-select" id="new_nhanvien"
-                    ng-model="newEmployeeAllownace.employeeID"
-                    ng-options="employee.id as employee.fullName for employee in employees track by employee.id"
-                    required>
-                  </select>
+    <div class="tab-content" id="myTabContent">
+      <!-- Phụ cấp Tab Pane -->
+      <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
+        aria-labelledby="home-tab" tabindex="0">
+        <div class="card">
+          <div class="tile">
+            <h3 class="tile-title">Phụ cấp</h3>
+            <form
+              style="display: flex; flex-direction: column; justify-content: space-between;">
+              <!-- Tìm kiếm phụ cấp -->
+              <div class="row mb-3">
+                <div class="col-md-8">
+                  <label class="form-label">Tìm kiếm phụ cấp:</label>
+                  <input type="text" class="form-control"
+                    placeholder="Nhập tên phụ cấp" ng-model="searchAllowance"
+                    ng-change="getAllowances(1)">
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label for="new_phucap" class="form-label">Phụ cấp</label>
-                  <select class="form-select" id="new_phucap"
-                    ng-model="newEmployeeAllownace.allowanceID"
-                    ng-options="allowance.id as allowance.allowanceName for allowance in allowances track by allowance.id"
-                    ng-change="updateAmount()"
-                    required>
-                  </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="new_batdau" class="form-label">Ngày bắt
-                    đầu</label>
-                  <input type="date" class="form-control" id="new_batdau"
-                    ng-model="newEmployeeAllownace.startDate" required>
-                </div>
+              </div>
 
-                <div class="col-md-6 mb-3">
-                  <label for="new_ketthuc" class="form-label">Ngày kết
-                    thúc</label>
-                  <input type="date" class="form-control" id="new_ketthuc"
-                    ng-model="newEmployeeAllownace.endDate" required>
-                </div>
+              <div class="mt-2 mb-3">
+                <button type="button" class="btn btn-outline-primary"
+                  ng-click="openAddModal()">Thêm</button>
+              </div>
 
-                <div class="col-md-6 mb-3">
-                  <label for="new_email" class="form-label">Số tiền</label>
-                  <input type="number" class="form-control" id="new_email"
-                    ng-model="newEmployeeAllownace.amount" min="0" required>
+              <h3 class="tile-title">Danh sách phụ cấp</h3>
+              <div class="table-responsive">
+                <table class="table table-hover table-bordered table-sm"
+                  style="font-size: 12px;" id="phongBanTable">
+                  <thead>
+                    <tr>
+                      <th>STT</th>
+                      <th>
+                        <a href="#" ng-click="sortData('allowanceName')">
+                          Tên phụ cấp
+                          <span
+                            ng-class="{'fa-arrow-up': sortColumn === 'allowanceName' && !sortReverse, 
+                                           'fa-arrow-down': sortColumn === 'allowanceName' && sortReverse, 
+                                           'fa': true}"></span>
+                        </a>
+                      </th>
+                      <th>
+                        <a href="#" ng-click="sortData('amount')">
+                          Số tiền
+                          <span
+                            ng-class="{'fa-arrow-up': sortColumn === 'amount' && !sortReverse, 
+                                           'fa-arrow-down': sortColumn === 'amount' && sortReverse, 
+                                           'fa': true}"></span>
+                        </a>
+                      </th>
+                      <th class="text-center" style="width: 200px;">Hành
+                        động</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="allowance in allowances">
+                      <td>{{$index + 1}}</td>
+                      <td>{{allowance.allowanceName}}</td>
+                      <td>{{allowance.amount | currency: '' : 0}}</td>
+                      <td class="text-center">
+                        <button class="btn btn-outline-success"
+                          ng-click="openUpdateModal(allowance)">Cập
+                          nhật</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Phân trang -->
+                <div class="pagination-container">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item"
+                      ng-class="{'disabled': allowanceCurrentPage === 1}">
+                      <button class="page-link"
+                        ng-click="getAllowances(allowanceCurrentPage - 1)"
+                        ng-disabled="allowanceCurrentPage === 1">Trang
+                        trước</button>
+                    </li>
+                    <li class="page-item disabled">
+                      <span class="page-link">Trang {{allowanceCurrentPage}} /
+                        {{totalAllowancePages}}</span>
+                    </li>
+                    <li class="page-item"
+                      ng-class="{'disabled': allowanceCurrentPage === totalAllowancePages}">
+                      <button class="page-link"
+                        ng-click="getAllowances(allowanceCurrentPage + 1)"
+                        ng-disabled="allowanceCurrentPage === totalAllowancePages">Trang
+                        sau</button>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary"
-              data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary"
-              ng-click="addAllowanceEmployee()"
-              ng-disabled="!addEmployeeForm">Lưu</button>
+        </div>
+      </div>
+
+      <!-- Danh sách nhân viên phụ cấp Tab Pane -->
+      <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel"
+        aria-labelledby="profile-tab" ng-init="getEmployeeAllowances()">
+        <div class="card">
+          <div class="tile">
+            <h3 class="tile-title">Nhân viên phụ cấp</h3>
+            <form
+              style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div class="row mb-3">
+                <div class="col-md-8">
+                  <label class="form-label">Tìm kiếm nhân viên:</label>
+                  <input type="text" class="form-control"
+                    placeholder="Nhập tên nhân viên" ng-model="searchEmployee"
+                    ng-change="filterEmployeeAllowances(1)">
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover table-bordered table-sm"
+                  style="font-size: 12px;" id="phongBanTable">
+                  <thead>
+                    <tr>
+                      <th>STT</th>
+                      <th>Tên nhân viên</th>
+                      <th>Tên phụ cấp</th>
+                      <th>Ngày bắt đầu</th>
+                      <th>Ngày kết thúc</th>
+                      <th>Số tiền</th>
+                      <th>Hiệu lực</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="allowance in filteredEmployeeAllowances">
+                      <td>{{$index + 1}}</td>
+                      <td>{{allowance.employeeID.fullName}}</td>
+                      <td>{{allowance.allowanceName}}</td>
+                      <td>{{allowance.startDate | date:'dd/MM/yyyy'}}</td>
+                      <td>{{allowance.endDate | date:'dd/MM/yyyy'}}</td>
+                      <td>{{allowance.amount | currency: '' : 0}}</td>
+                      <td
+                        ng-class="isEffective(allowance.endDate) ? 'text-success' : 'text-danger'">
+                        {{isEffective(allowance.endDate) ? "Còn hiệu lực" :
+                        "Hết hiệu lực"}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Phân trang -->
+                <div class="pagination-container">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item"
+                      ng-class="{'disabled': employeeCurrentPage === 1}">
+                      <button class="page-link"
+                        ng-click="changeEmployeePage(employeeCurrentPage - 1)"
+                        ng-disabled="employeeCurrentPage === 1">Trang
+                        trước</button>
+                    </li>
+                    <li class="page-item disabled">
+                      <span class="page-link">Trang {{employeeCurrentPage}} /
+                        {{totalEmployeePages}}</span>
+                    </li>
+                    <li class="page-item"
+                      ng-class="{'disabled': employeeCurrentPage === totalEmployeePages}">
+                      <button class="page-link"
+                        ng-click="changeEmployeePage(employeeCurrentPage + 1)"
+                        ng-disabled="employeeCurrentPage === totalEmployeePages">Trang
+                        sau</button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-    <!-- modal sửa nhân viên phụ cấp -->
-    <div class="modal fade" id="updateModal" tabindex="-1"
-      aria-labelledby="updateModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="updateModalLabel">Cập nhật nhân viên phụ
-              cấp</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- Form sửa nhân viên phụ cấp -->
+  </div>
+
+  <!-- modal thêm nhân viên phụ cấp -->
+  <div class="modal fade" id="addModal" tabindex="-1"
+    aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addModalLabel">Thêm phụ
+            cấp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form thêm nhân viên phụ cấp -->
+          <form name="addEmployeeForm" novalidate>
             <div class="row">
+              <div class="col-md-12 mb-3">
+                <!-- Tìm kiếm nhân viên -->
+                <div class="form-group">
+                  <label for="searchEmployee" class="form-label">Tìm kiếm
+                    nhân
+                    viên</label>
+                  <input type="text" class="form-control"
+                    id="searchEmployee"
+                    ng-model="searchText"
+                    placeholder="Nhập tên nhân viên">
+                </div>
+
+                <!-- Checkbox cho danh sách nhân viên -->
+                <div class="form-group mt-2">
+                  <div class="table-container"
+                    style="max-height: 200px; overflow-y: auto;">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Ảnh</th>
+                          <th>Tên nhân viên</th>
+                          <th>Email</th>
+                          <th>Chọn</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          ng-repeat="employee in employees | filter: searchText">
+                          <td><img class="rounded-circle me-2" style="width: 25px; height: 25px;"
+                            ng-src="{{employee.avatarURL}}"></td>
+                          <td>{{ employee.fullName }}</td>
+                          <td>{{ employee.email }}</td>
+                          <td>
+                            <!-- Checkbox cho phép chọn nhân viên -->
+                            <input type="checkbox"
+                              class="form-check-input"
+                              ng-checked="selectedEmployeeIds.includes(employee.id)"
+                              ng-click="toggleEmployeeSelection(employee.id)">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
               <div class="col-md-6 mb-3">
+                <label for="new_phucap" class="form-label">Phụ cấp</label>
+                <input type="text" class="form-control" id="new_batdau"
+                  ng-model="newEmployeeAllownace.allowanceName" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="new_batdau" class="form-label">Ngày bắt
+                  đầu</label>
+                <input type="date" class="form-control" id="new_batdau"
+                  ng-model="newEmployeeAllownace.startDate" required>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="new_ketthuc" class="form-label">Ngày kết
+                  thúc</label>
+                <input type="date" class="form-control" id="new_ketthuc"
+                  ng-model="newEmployeeAllownace.endDate" required>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="new_email" class="form-label">Số tiền</label>
+                <input type="number" class="form-control" id="new_email"
+                  ng-model="newEmployeeAllownace.amount" min="0" required>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+            data-bs-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-primary"
+            ng-click="addAllowanceEmployee()"
+            ng-disabled="!addEmployeeForm">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal sửa nhân viên phụ cấp -->
+  <div class="modal fade" id="updateModal" tabindex="-1"
+    aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Cập nhật phụ
+            cấp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form sửa nhân viên phụ cấp -->
+          <form name="updateEmployeeForm" novalidate>
+            <div class="row">
+              <!-- Tìm kiếm nhân viên -->
+              <div class="col-md-12 mb-3">
+                <div class="form-group">
+                  <label for="searchEmployeeUpdate" class="form-label">Tìm
+                    kiếm nhân viên</label>
+                  <input type="text" class="form-control"
+                    id="searchEmployeeUpdate" ng-model="searchText"
+                    placeholder="Nhập tên nhân viên">
+                </div>
+              </div>
+
+              <!-- Checkbox cho danh sách nhân viên -->
+              <div class="col-md-12 mb-3">
                 <label for="update_nhanvien" class="form-label">Nhân
                   viên</label>
-                <select class="form-select" id="update_nhanvien"
-                  ng-model="selectedEmployeeAllownace.employeeID"
-                  ng-options="employee as employee.fullName for employee in employees track by employee.id"
-                  ng-change="onEmployeeChange()">
-                </select>
+                <div class="table-container"
+                  style="max-height: 200px; overflow-y: auto;">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Tên nhân viên</th>
+                        <th>Email</th>
+                        <th>Chọn</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        ng-repeat="employee in employees | filter: searchText">
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ employee.fullName }}</td>
+                        <td>{{ employee.email }}</td>
+                        <td>
+                          <input type="checkbox" class="form-check-input"
+                            ng-checked="isEmployeeSelected(employee.id)"
+                            ng-click="toggleEmployeeSelectionupdate(employee.id)">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-
               <div class="col-md-6 mb-3">
-                <label for="update_phucap" class="form-label">Phụ cấp</label>
-                <select class="form-select" id="update_phucap"
-                  ng-model="selectedEmployeeAllownace.allowanceID"
-                  ng-options="allowance as allowance.allowanceName for allowance in allowances track by allowance.id"
-                  ng-change="onAllowanceChange()">
-                </select>
+                <label for="update_phucap" class="form-label">Phụ
+                  cấp</label>
+                <input type="text" class="form-control" id="update_phucap"
+                  ng-model="selectedEmployeeAllowance.allowanceName"
+                  required>
               </div>
-
+              <!-- Ngày bắt đầu -->
               <div class="col-md-6 mb-3">
                 <label for="update_batdau" class="form-label">Ngày bắt
                   đầu</label>
                 <input type="date" class="form-control" id="update_batdau"
-                  ng-model="selectedEmployeeAllownace.startDate">
+                  ng-model="selectedEmployeeAllowance.startDate" required>
               </div>
+              <!-- Ngày kết thúc -->
               <div class="col-md-6 mb-3">
                 <label for="update_ketthuc" class="form-label">Ngày kết
                   thúc</label>
-                <input type="date" class="form-control" id="update_ketthuc"
-                  ng-model="selectedEmployeeAllownace.endDate">
+                <input type="date" class="form-control"
+                  id="update_ketthuc"
+                  ng-model="selectedEmployeeAllowance.endDate" required>
               </div>
               <div class="col-md-6 mb-3">
-                <label for="update_sotien" class="form-label">Số tiền</label>
-                <input type="number" class="form-control" id="update_sotien"
-                  ng-model="selectedEmployeeAllownace.amount">
+                <label for="update_sotien" class="form-label">Số
+                  tiền</label>
+                <input type="number" class="form-control"
+                  id="update_sotien"
+                  ng-model="selectedEmployeeAllowance.amount" min="0"
+                  required>
               </div>
             </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+            data-bs-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-primary"
+            ng-click="updateAllowanceEmployee()"
+            ng-disabled="!updateEmployeeForm.$valid">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary"
-              data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary"
-              ng-click="updateAllowanceEmployee()">Lưu</button>
-          </div>
+  <div class="modal fade" id="detailModal" tabindex="-1"
+    aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailModalLabel">Thông tin nhân
+            viên
+            phụ
+            cấp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-hover table-bordered table-sm"
+            style="font-size: 12px;" id="phongBanTable">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên nhân viên</th>
+                <th>Tên phụ cấp</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Số tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="allowance in detailEmployeeAllownace"
+                ng-click="toggleSubTable($index)">
+                <td>{{$index + 1}}</td>
+                <td>{{allowance.employeeID.fullName}}</td>
+                <td>{{allowance.allowanceName}}</td>
+                <td>{{allowance.startDate | date:'dd/MM/yyyy'}}</td>
+                <td>{{allowance.endDate | date:'dd/MM/yyyy'}}</td>
+                <td>{{allowance.amount | currency: '' : 0}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- modal thêm phụ cấp -->
-    <div class="modal fade" id="addAllowanceModal" tabindex="-1"
-      aria-labelledby="addAllowanceModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addAllowanceModalLabel">Thêm phụ
-              cấp</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- Form thêm phụ cấp -->
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="new_ketthuc" class="form-label">Tên phụ cấp</label>
-                <input type="text" class="form-control" id
-                  ng-model="newAllowance.allowanceName">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="new_email" class="form-label">Số tiền</label>
-                <input type="text" class="form-control" id
-                  ng-model="newAllowance.amount">
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary"
-              data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary"
-              ng-click="addAllowance()">Lưu</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- modal sửa phụ cấp -->
-    <div class="modal fade" id="updateAllowanceModal" tabindex="-1"
-      aria-labelledby="updateAllowanceModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="updateAllowanceModalLabel">Cập nhật phụ
-              cấp</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- Form sửa phụ cấp -->
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="new_ketthuc" class="form-label">Tên phụ cấp</label>
-                <input type="text" class="form-control"
-                  ng-model="selectAllowance.allowanceName">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="new_email" class="form-label">Số tiền</label>
-                <input type="text" class="form-control"
-                  ng-model="selectAllowance.amount">
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary"
-              data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary"
-              ng-click="updateAllowance()">Lưu</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-  
+</main>
