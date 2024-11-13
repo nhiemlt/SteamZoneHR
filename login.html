@@ -1,267 +1,257 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="./images/favicon.png" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./images/favicon.png">
     <title>Đăng Nhập</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./css/login.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/login.css">
     <!-- Đảm bảo rằng bạn đã nhúng CryptoJS đúng cách trước các script khác -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-  </head>
+</head>
 
-  <body>
+<body>
+
     <div class="login-container">
-      <div class="bg-image"></div>
-      <div class="login-form">
-        <img src="./images/logo.png" id="logo" alt="Logo" />
-        <h2 class="text-center mb-4">Đăng Nhập</h2>
-        <form id="loginForm">
-          <div class="mb-3">
-            <label for="username" class="form-label">Tên người dùng</label>
-            <input
-              type="text"
-              class="form-control"
-              id="username"
-              placeholder="Nhập tên người dùng"
-              required
-              autocomplete="off"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Mật khẩu</label>
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              placeholder="Nhập mật khẩu"
-              required
-              autocomplete="off"
-            />
-          </div>
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="rememberMe" />
-            <label class="form-check-label" for="rememberMe"
-              >Ghi nhớ mật khẩu</label
-            >
-          </div>
-          <button type="submit" class="btn btn-primary w-100 mb-3">
-            Đăng Nhập
-          </button>
-          <div class="mb-3 text-center">
-            <a href="./forget-password.html" class="text-decoration-none"
-              >Quên mật khẩu?</a
-            >
-          </div>
-        </form>
-      </div>
+        <div class="bg-image"></div>
+        <div class="login-form">
+            <img src="./images/logo.png" id="logo" alt="Logo">
+            <h2 class="text-center mb-4">Đăng Nhập</h2>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Tên người dùng</label>
+                    <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng" required
+                        autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required
+                        autocomplete="off">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Ghi nhớ mật khẩu</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3">Đăng Nhập</button>
+                <div class="mb-3 text-center">
+                    <a href="./forget-password.html" class="text-decoration-none">Quên mật khẩu?</a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Modal for errors -->
-    <div
-      class="modal fade"
-      id="errorModal"
-      tabindex="-1"
-      aria-labelledby="errorModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="errorModalLabel">Lỗi</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p id="errorMessage"></p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-dismiss="modal"
-            >
-              Đóng
-            </button>
-          </div>
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="errorModalLabel">Lỗi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script>
-      // Khóa bí mật dùng để mã hóa
-      const secretKey = "grtrteesedngfhjrterfgsdfrewqrrtyrhgg543dsf342hdfr";
+        document.addEventListener('DOMContentLoaded', function () {
+            // Kiểm tra nếu đã có token trong sessionStorage hoặc cookie
+            const sessionToken = sessionStorage.getItem('token');
+            const cookieToken = getCookie('token');
 
-      // Lắng nghe sự kiện khi người dùng nhấn nút đăng nhập
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
+            if (sessionToken || cookieToken) {
+                // Chuyển hướng đến index.html nếu token tồn tại
+                window.location.href = 'index.html';
+                return;
+            }
 
-          const username = document.getElementById("username").value;
-          const password = document.getElementById("password").value;
-          const rememberMe = document.getElementById("rememberMe").checked;
+            // Nếu không có token, tiếp tục giải mã username và password nếu có
+            const encryptedUsername = getCookie('username');
+            const encryptedPassword = getCookie('password');
 
-          // Mã hóa tên người dùng và mật khẩu
-          const encryptedUsername = encrypt(username);
-          const encryptedPassword = encrypt(password);
+            if (encryptedUsername && encryptedPassword) {
+                const username = decrypt(encryptedUsername);
+                const password = decrypt(encryptedPassword);
 
-          // Nếu chọn "Ghi nhớ mật khẩu", lưu thông tin mã hóa vào cookie
-          if (rememberMe) {
-            setCookie("username", encryptedUsername, 1);
-            setCookie("password", encryptedPassword, 1);
-          }
-
-          const loginData = {
-            keyWord: username,
-            password: password,
-          };
-
-          // Gửi yêu cầu đăng nhập đến API
-          fetch("http://localhost:8080/api/login/loginUser", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(loginData),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              sessionStorage.setItem(
-                "userSession",
-                JSON.stringify({
-                  username: username,
-                  token: data.token,
-                })
-              );
-              window.location.href = "index.html";
-
-              // Nếu đăng nhập không thành công, xóa cookie
-              // if (code !== 200) {
-              //     deleteCookie('username');
-              //     deleteCookie('password');
-              // }
-            })
-            .catch((error) => {
-              console.error("Lỗi khi gửi yêu cầu đăng nhập:", error);
-              deleteCookie("username");
-              deleteCookie("password");
-              showErrorModal("Lỗi kết nối.");
-            });
+                autoLogin(username, password);
+            }
         });
 
-      // Giải mã thông tin từ cookie khi trang được tải
-      document.addEventListener("DOMContentLoaded", function () {
-        const encryptedUsername = getCookie("username");
-        const encryptedPassword = getCookie("password");
+        // Khóa bí mật dùng để mã hóa
+        const secretKey = 'grtrteesedngfhjrterfgsdfrewqrrtyrhgg543dsf342hdfr';
 
-        if (encryptedUsername && encryptedPassword) {
-          const username = decrypt(encryptedUsername);
-          const password = decrypt(encryptedPassword);
+        // Lắng nghe sự kiện khi người dùng nhấn nút đăng nhập
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
 
-          autoLogin(username, password);
-        }
-      });
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
 
-      // Hàm tự động đăng nhập
-      function autoLogin(username, password) {
-        const loginData = {
-          keyWord: username,
-          password: password,
-        };
+            // Mã hóa tên người dùng và mật khẩu
+            const encryptedUsername = encrypt(username);
+            const encryptedPassword = encrypt(password);
 
-        fetch("http://localhost:8080/api/login/loginUser", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.code === 200) {
-              sessionStorage.setItem(
-                "userSession",
-                JSON.stringify({
-                  username: username,
-                  token: data.token,
-                })
-              );
-              window.location.href = "index.html";
-            } else {
-              // Xóa cookie nếu đăng nhập tự động thất bại
-              deleteCookie("username");
-              deleteCookie("password");
+            // Nếu chọn "Ghi nhớ mật khẩu", lưu thông tin mã hóa vào cookie
+            if (rememberMe) {
+                setCookie('username', encryptedUsername, 1);
+                setCookie('password', encryptedPassword, 1);
             }
-          })
-          .catch((error) => {
-            console.error("Lỗi khi gửi yêu cầu đăng nhập tự động:", error);
-            deleteCookie("username");
-            deleteCookie("password");
-          });
-      }
 
-      // Hàm mã hóa
-      function encrypt(data) {
-        return CryptoJS.AES.encrypt(data, secretKey).toString();
-      }
+            const loginData = {
+                username: username,
+                password: password
+            };
 
-      // Hàm giải mã
-      function decrypt(encryptedData) {
-        const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-        return bytes.toString(CryptoJS.enc.Utf8);
-      }
+            // Gửi yêu cầu đăng nhập đến API
+            fetch('http://localhost:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        // Nếu có lỗi (400, 401,...), trả về lỗi
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Đăng nhập thất bại');
+                        });
+                    }
+                })
+                .then(data => {
+                    // Lưu thông tin đăng nhập và token vào sessionStorage
+                    sessionStorage.setItem('userSession', JSON.stringify({
+                        username: username,
+                        token: data.token
+                    }));
 
-      // Hàm thiết lập cookie
-      function setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = name + "=" + value + ";" + expires + ";path=/";
-      }
+                    if (!rememberMe) {
+                        setCookie("token", data.token, 2)
+                    } else {
+                        sessionStorage.setItem('token', data.token);
+                    }
 
-      // Hàm lấy cookie
-      function getCookie(name) {
-        const nameEQ = name + "=";
-        const cookies = document.cookie.split(";");
-        for (let cookie of cookies) {
-          cookie = cookie.trim();
-          if (cookie.indexOf(nameEQ) === 0) {
-            return cookie.substring(nameEQ.length);
-          }
+                    window.location.href = 'index.html';
+                })
+                .catch(error => {
+                    // Xử lý lỗi khi gửi yêu cầu đăng nhập
+                    console.error('Lỗi khi gửi yêu cầu đăng nhập:', error);
+                    // Xóa cookie nếu có lỗi
+                    deleteCookie('username');
+                    deleteCookie('password');
+                    showErrorModal(error.message);
+                });
+        });
+
+        // Giải mã thông tin từ cookie khi trang được tải
+        document.addEventListener('DOMContentLoaded', function () {
+            const encryptedUsername = getCookie('username');
+            const encryptedPassword = getCookie('password');
+
+            if (encryptedUsername && encryptedPassword) {
+                const username = decrypt(encryptedUsername);
+                const password = decrypt(encryptedPassword);
+
+                autoLogin(username, password);
+            }
+        });
+
+        // Hàm tự động đăng nhập
+        function autoLogin(username, password) {
+            const loginData = {
+                username: username,
+                password: password
+            };
+
+            fetch('http://localhost:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        sessionStorage.setItem('userSession', JSON.stringify({
+                            username: username,
+                            token: data.token
+                        }));
+                        window.location.href = 'index.html';
+                    } else {
+                        // Xóa cookie nếu đăng nhập tự động thất bại
+                        deleteCookie('username');
+                        deleteCookie('password');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi gửi yêu cầu đăng nhập tự động:', error);
+                    deleteCookie('username');
+                    deleteCookie('password');
+                });
         }
-        return null;
-      }
 
-      // Hàm xóa cookie
-      function deleteCookie(name) {
-        document.cookie =
-          name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-      }
+        // Hàm mã hóa
+        function encrypt(data) {
+            return CryptoJS.AES.encrypt(data, secretKey).toString();
+        }
 
-      // Hàm hiển thị modal thông báo lỗi
-      function showErrorModal(message) {
-        const errorMessageElement = document.getElementById("errorMessage");
-        errorMessageElement.textContent = message;
-        const errorModal = new bootstrap.Modal(
-          document.getElementById("errorModal")
-        );
-        errorModal.show();
-      }
+        // Hàm giải mã
+        function decrypt(encryptedData) {
+            const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+
+        // Hàm thiết lập cookie
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        // Hàm lấy cookie
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.indexOf(nameEQ) === 0) {
+                    return cookie.substring(nameEQ.length);
+                }
+            }
+            return null;
+        }
+
+        // Hàm xóa cookie
+        function deleteCookie(name) {
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+        }
+
+        // Hàm hiển thị modal thông báo lỗi
+        function showErrorModal(message) {
+            const errorMessageElement = document.getElementById('errorMessage');
+            errorMessageElement.textContent = message;
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
     </script>
 
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+
+</body>
+
 </html>
