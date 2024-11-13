@@ -44,7 +44,7 @@
                 </div>
               </div>
 
-              <div class="mt-3 mb-3">
+              <div class="mt-2 mb-3">
                 <button type="button" class="btn btn-outline-primary"
                   ng-click="openAddModal()">Thêm</button>
               </div>
@@ -227,15 +227,13 @@
                 </div>
 
                 <!-- Checkbox cho danh sách nhân viên -->
-                <div class="form-group">
-                  <label for="new_nhanvien" class="form-label">Nhân
-                    viên</label>
+                <div class="form-group mt-2">
                   <div class="table-container"
                     style="max-height: 200px; overflow-y: auto;">
                     <table class="table">
                       <thead>
                         <tr>
-                          <th>#</th>
+                          <th>Ảnh</th>
                           <th>Tên nhân viên</th>
                           <th>Email</th>
                           <th>Chọn</th>
@@ -244,7 +242,8 @@
                       <tbody>
                         <tr
                           ng-repeat="employee in employees | filter: searchText">
-                          <td>{{ $index + 1 }}</td>
+                          <td><img class="rounded-circle me-2" style="width: 25px; height: 25px;"
+                            ng-src="{{employee.avatarURL}}"></td>
                           <td>{{ employee.fullName }}</td>
                           <td>{{ employee.email }}</td>
                           <td>
