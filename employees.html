@@ -15,17 +15,34 @@
         <div class="tile-body">
           <div class="d-flex justify-content-between">
             <div class="input-group mb-3 me-5 w-25">
-              <input type="text" class="form-control"  placeholder="Tìm kiếm nhân viên..." ng-model="searchText">
-              <span class="input-group-text" id="basic-addon2"><i class="bi bi-search"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Tìm kiếm nhân viên..."
+                ng-model="searchText"
+              />
+              <span class="input-group-text" id="basic-addon2"
+                ><i class="bi bi-search"></i
+              ></span>
             </div>
-            
-            <button class="btn btn-outline-primary mb-3 col-2 me-2" ng-click="openAddModal()">Thêm nhân viên</button>
+
+            <button
+              class="btn btn-outline-primary mb-3 col-2 me-2"
+              ng-click="openAddModal()"
+            >
+              Thêm nhân viên
+            </button>
           </div>
-          <div class="row d-flex align-items-end flex-column">
-            
-          </div>
-          <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-            <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="employees">
+          <div class="row d-flex align-items-end flex-column"></div>
+          <div
+            class="table-responsive"
+            style="max-height: 500px; overflow-y: auto"
+          >
+            <table
+              class="table table-hover table-bordered table-sm"
+              style="font-size: 12px"
+              id="employees"
+            >
               <thead>
                 <tr>
                   <th>STT</th>
@@ -43,12 +60,14 @@
               </thead>
               <tbody>
                 <tr ng-repeat="employee in filteredEmployees">
-                  <td>{{$index + 1}}</td>
-                  <td>{{employee.positionDepartmentID.positionID.positionName}} -
-                    {{employee.positionDepartmentID.departmentID.departmentName}}</td>
+                  <td>{{ (page * size) + $index + 1 }}</td>
+                  <td>{{employee.positionID.positionName}}</td>
                   <td>
-                    <img class="rounded-circle me-2" style="width: 25px; height: 25px;"
-                      ng-src="{{employee.avatarURL}}">{{employee.fullName}}
+                    <img
+                      class="rounded-circle me-2"
+                      style="width: 25px; height: 25px"
+                      ng-src="{{employee.avatarURL}}"
+                    />{{employee.fullName}}
                   </td>
                   <td>{{employee.gender ? 'Nam' : 'Nữ'}}</td>
                   <td>{{employee.birthDate | date: 'dd/MM/yyyy'}}</td>
@@ -58,220 +77,365 @@
                   <td>{{employee.address}}</td>
                   <td>
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="statusSwitch{{$index}}"
-                        ng-model="employee.isActive" ng-click="toggleStatus(employee)">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="statusSwitch{{$index}}"
+                        ng-model="employee.isActive"
+                        ng-click="toggleStatus(employee.id, employee.isActive)"
+                      />
                     </div>
                   </td>
                   <td>
-                    <button class="btn btn-primary btn-sm" style="font-size: 0.5rem;" ng-click="openUpdateModal(employee)"><i class="bi bi-pencil-square"></i></button>
+                    <button
+                      class="btn btn-primary btn-sm"
+                      style="font-size: 0.5rem"
+                      ng-click="openUpdateModal(employee)"
+                    >
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button
+                      class="btn btn-danger btn-sm"
+                      style="font-size: 0.5rem"
+                      ng-click="deleteEmployee(employee.id)"
+                    >
+                      <i class="bi bi-x-square-fill"></i>
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
+            <nav aria-label="Employee pagination">
+              <ul class="pagination pagination-sm">
+                <li
+                  class="page-item"
+                  ng-repeat="i in [].constructor(totalPages) track by $index"
+                  ng-class="{active: page === $index}"
+                >
+                  <a class="page-link" href="#" ng-click="goToPage($index)">
+                    {{$index + 1}}
+                  </a>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Modal thêm nhân viên -->
-    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="addModal"
+      tabindex="-1"
+      aria-labelledby="addModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="addModalLabel">Thêm nhân viên</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="new_hoten" class="form-label">Họ và tên</label>
-                <input type="text" class="form-control" id="new_hoten" ng-model="newEmployee.fullName" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="new_hoten"
+                  ng-model="newEmployee.fullName"
+                  required
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_gioitinh" class="form-label">Giới tính</label>
                 <div>
                   <label>
-                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="true"> Nam
+                    <input
+                      type="radio"
+                      ng-model="newEmployee.gender"
+                      name="gender"
+                      value="true"
+                    />
+                    Nam
                   </label>
                   <label>
-                    <input type="radio" ng-model="newEmployee.gender" name="gender" value="false"> Nữ
+                    <input
+                      type="radio"
+                      ng-model="newEmployee.gender"
+                      name="gender"
+                      value="false"
+                    />
+                    Nữ
                   </label>
                 </div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_ngaysinh" class="form-label">Ngày sinh</label>
-                <input type="date" class="form-control" id="new_ngaysinh" ng-model="newEmployee.birthDate" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="new_department" class="form-label">Phòng ban</label>
-                <select ng-model="newEmployee.department" class="form-select" id="new_department" required>
-                  <option value="" disabled selected>Chọn phòng ban...</option>
-                  <option ng-repeat="x in departments" ng-value="{{x.id}}">{{x.departmentName}}</option>
-                </select>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="new_ngaysinh"
+                  ng-model="newEmployee.birthDate"
+                  required
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_position" class="form-label">Chức vụ</label>
-                <select ng-model="newEmployee.position" class="form-select" id="new_position" required>
+                <select
+                  ng-model="newEmployee.positionID"
+                  class="form-select"
+                  id="new_position"
+                  required
+                >
                   <option value="" disabled selected>Chọn chức vụ...</option>
-                  <option ng-repeat="x in positions" ng-value="{{x.id}}">{{x.positionName}}</option>
+                  <option ng-repeat="x in positions" ng-value="{{x.id}}">
+                    {{x.positionName}}
+                  </option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="new_email" ng-model="newEmployee.email" required>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="new_email"
+                  ng-model="newEmployee.email"
+                  required
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_sdt" class="form-label">Số điện thoại</label>
-                <input type="text" class="form-control" id="new_sdt" ng-model="newEmployee.phoneNumber" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="new_sdt"
+                  ng-model="newEmployee.phoneNumber"
+                  required
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_cccd" class="form-label">CCCD</label>
-                <input type="text" class="form-control" id="new_cccd" ng-model="newEmployee.IDCardNumber" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="new_cccd"
+                  ng-model="newEmployee.idcardNumber"
+                  required
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_diachi" class="form-label">Địa chỉ</label>
-                <input type="text" class="form-control" id="new_diachi" ng-model="newEmployee.address" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="new_diachi"
+                  ng-model="newEmployee.address"
+                  required
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="new_hinhanh" class="form-label">Hình ảnh</label>
-                <input type="file" class="form-control" id="new_hinhanh" accept="image/*">
+                <input
+                  type="file"
+                  class="form-control"
+                  id="new_hinhanh"
+                  accept="image/*"
+                  ng-model="newEmployee.hinhanhFile"
+                  onchange="angular.element(this).scope().previewNewImage(this)"
+                />
               </div>
               <div class="col-md-6 mb-3">
-                <img ng-if="newEmployee.avatarURL" ng-src="{{newEmployee.avatarURL}}" alt="Hình nhân viên"
-                  style="width: 100px; height: 100px; object-fit: cover;">
+                <img
+                  ng-if="newEmployee.avatarURL"
+                  ng-src="{{newEmployee.avatarURL}}"
+                  alt="Hình nhân viên"
+                  style="width: 100px; height: 100px; object-fit: cover"
+                />
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary" ng-click="addEmployee()">Lưu</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="addEmployee()"
+            >
+              Lưu
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Modal cập nhật nhân viên -->
-    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="updateModal"
+      tabindex="-1"
+      aria-labelledby="updateModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="updateModalLabel">Cập nhật nhân viên</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title" id="updateModalLabel">
+              Cập nhật nhân viên
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="update_hoten" class="form-label">Họ và tên</label>
-                <input type="text" class="form-control" id="update_hoten" ng-model="selectedEmployee.fullName">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="update_hoten"
+                  ng-model="selectedEmployee.fullName"
+                />
               </div>
               <div class="col-md-6 mb-3">
-                <label for="update_gioitinh" class="form-label">Giới tính</label>
+                <label for="update_gioitinh" class="form-label"
+                  >Giới tính</label
+                >
                 <div>
                   <label>
-                    <input type="radio" ng-model="selectedEmployee.gender" ng-value="true" name="gender"> Nam
+                    <input
+                      type="radio"
+                      ng-model="selectedEmployee.gender"
+                      ng-value="true"
+                      name="gender"
+                    />
+                    Nam
                   </label>
                   <label>
-                    <input type="radio" ng-model="selectedEmployee.gender" ng-value="false" name="gender"> Nữ
+                    <input
+                      type="radio"
+                      ng-model="selectedEmployee.gender"
+                      ng-value="false"
+                      name="gender"
+                    />
+                    Nữ
                   </label>
                 </div>
               </div>
               <div class="col-md-6 mb-3">
-                <label for="update_ngaysinh" class="form-label">Ngày sinh</label>
-                <input type="date" class="form-control" id="update_ngaysinh" ng-model="selectedEmployee.birthDate">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="update_department" class="form-label">Phòng ban</label>
-                <select ng-model="selectedEmployee.positionDepartmentID.departmentID.id" class="form-select"
-                  id="update_department">
-                  <option value="" disabled selected>Chọn phòng ban...</option>
-                  <option ng-repeat="x in departments" ng-value="{{x.id}}">{{x.departmentName}}</option>
-                </select>
+                <label for="update_ngaysinh" class="form-label"
+                  >Ngày sinh</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  id="update_ngaysinh"
+                  ng-model="selectedEmployee.birthDate"
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="update_position" class="form-label">Chức vụ</label>
-                <select ng-model="selectedEmployee.positionDepartmentID.positionID.id" class="form-select"
-                  id="update_position">
+                <select
+                  ng-model="selectedEmployee.positionID.id"
+                  class="form-select"
+                  id="update_position"
+                >
                   <option value="" disabled selected>Chọn chức vụ...</option>
-                  <option ng-repeat="x in positions" ng-value="{{x.id}}">{{x.positionName}}</option>
+                  <option ng-repeat="x in positions" ng-value="{{x.id}}">
+                    {{x.positionName}}
+                  </option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="update_email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="update_email" ng-model="selectedEmployee.email">
+                <input
+                  type="email"
+                  class="form-control"
+                  id="update_email"
+                  ng-model="selectedEmployee.email"
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="update_sdt" class="form-label">Số điện thoại</label>
-                <input type="text" class="form-control" id="update_sdt" ng-model="selectedEmployee.phoneNumber">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="update_sdt"
+                  ng-model="selectedEmployee.phoneNumber"
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="update_cccd" class="form-label">CCCD</label>
-                <input type="text" class="form-control" id="update_cccd" ng-model="selectedEmployee.idcardNumber">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="update_cccd"
+                  ng-model="selectedEmployee.idcardNumber"
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="update_diachi" class="form-label">Địa chỉ</label>
-                <input type="text" class="form-control" id="update_diachi" ng-model="selectedEmployee.address">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="update_diachi"
+                  ng-model="selectedEmployee.address"
+                />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="update_hinhanh" class="form-label">Hình ảnh</label>
-                <input type="file" class="form-control" id="update_hinhanh" accept="image/*">
+                <input
+                  type="file"
+                  class="form-control"
+                  id="update_hinhanh"
+                  accept="image/*"
+                />
               </div>
               <div class="col-md-6 mb-3">
-                <img ng-if="selectedEmployee.avatarURL" ng-src="{{selectedEmployee.avatarURL}}" alt="Hình nhân viên"
-                  style="width: 100px; height: 100px; object-fit: cover;">
+                <img
+                  ng-if="selectedEmployee.avatarURL"
+                  ng-src="{{selectedEmployee.avatarURL}}"
+                  alt="Hình nhân viên"
+                  style="width: 100px; height: 100px; object-fit: cover"
+                />
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary" ng-click="updateEmployee()">Cập nhật</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="updateEmployee()"
+            >
+              Cập nhật
+            </button>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Error Modal -->
-    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="errorModalLabel">
-              <i class="fas fa-exclamation-triangle me-2"></i> Lỗi
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center">
-            <i class="bi bi-x-circle text-danger fs-1 mb-3"></i>
-            <p>{{ errorMessage }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-success text-white">
-            <h5 class="modal-title" id="successModalLabel">
-              <i class="fas fa-check-circle me-2"></i> Thành Công
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center">
-            <i class="bi bi-check-circle text-success fs-1 mb-3"></i>
-            <p>{{ successMessage }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Đóng</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
   </div>
 </main>
