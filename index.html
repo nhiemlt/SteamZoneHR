@@ -167,8 +167,7 @@
           })
           .then(data => {
             // Xử lý thông tin người dùng từ phản hồi nếu cần
-            if (data.message) {
-              console.log(data.message);  // Đây là thông báo mà bạn có thể sử dụng
+            if (data.message) { // Đây là thông báo mà bạn có thể sử dụng
               const account = data.message.split(":").pop().trim();
               // Cập nhật giao diện với dữ liệu người dùng nếu cần
               document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
