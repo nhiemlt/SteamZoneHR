@@ -33,9 +33,9 @@
                   <td>{{employee.fullName}}</td>
                   <td>{{employee.positionName}}</td>
                   <td>{{employee.departmentName}}</td>
-                  <td>{{ employee.agreedSalary | number:0 }} ₫</td>
+                  <td>{{ employee.salary | number:0 }} ₫</td>
                   <td>{{ employee.totalAllowance | number:0 }}</td>
-                  <td>{{ employee.hourlyRate | number:0 }} ₫</td>
+                  <td>{{ employee.totalOvertimeHours | number:0 }} ₫</td>
                   <td>{{ (employee.totalSalary) | number:0 }} ₫</td>
               </tr>
               </tbody>
