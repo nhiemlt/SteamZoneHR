@@ -1,6 +1,14 @@
+<<<<<<< HEAD
+app.controller('employeeController', function ($scope, $http) {
+  // Lấy dữ liệu nhân viên từ API
+  
+  const domain = 'http://192.168.1.19:8080';
+  const baseUrl = domain+'/api/employee';
+=======
 app.controller("employeeController", function ($scope, $http) {
   const domain = "http://localhost:8080";
   const baseUrl = domain + "/api/employees";
+>>>>>>> 8e7ca87ea73177e305db4adff195abb698160f63
 
   $scope.page = 0;
   $scope.size = 10;
