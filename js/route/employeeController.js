@@ -1,4 +1,4 @@
-app.controller("employeeController", function ($scope, $http) {
+app.controller("employeeController", function ($scope, $http, $location) {
   const domain = "http://localhost:8080";
   const baseUrl = domain + "/api/employees";
 
@@ -30,6 +30,11 @@ app.controller("employeeController", function ($scope, $http) {
       .catch((error) => {
         console.error("Lỗi khi lấy danh sách nhân viên:", error);
       });
+  };
+
+  $scope.goLeaveRecord = function (employeeId) {
+    // Điều hướng tới trang chi tiết nhân viên dựa trên ID
+    $location.path(`/leave-records/${employeeId}`);
   };
 
   // Chuyển đến trang mới
