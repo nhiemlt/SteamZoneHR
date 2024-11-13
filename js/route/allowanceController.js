@@ -1,5 +1,5 @@
 app.controller('allowancesController', function ($scope, $http) {
-    const domain = 'http://localhost:8080';
+    const domain = 'http://192.168.1.19:8080';
 
     $scope.searchEmployee = '';  // Tìm kiếm nhân viên phụ cấp
     $scope.searchAllowance = ''; // Tìm kiếm phụ cấp
