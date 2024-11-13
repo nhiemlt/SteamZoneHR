@@ -133,19 +133,19 @@
             // Nếu có thông tin đăng nhập, gọi API để lấy thông tin người dùng
             const email = userSession.username;
 
-            fetch(`http://localhost:8080/api/employee/get-by-email?email=${encodeURIComponent(email)}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Không tìm thấy người dùng");
-                    return response.json();
-                })
-                .then(data => {
-                    // Cập nhật giao diện với dữ liệu người dùng
-                    document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
-                    document.querySelector(".app-sidebar__user-name").textContent = data.fullName || "Tên không có sẵn";
-                    document.querySelector(".app-sidebar__user-designation").textContent = data.positionDepartmentID.positionID.positionName || "Vị trí không có sẵn";
-                    document.getElementById("department").textContent = data.positionDepartmentID.departmentID.departmentName || "Phòng ban không có sẵn";
-                })
-                .catch(error => console.error("Lỗi khi lấy thông tin người dùng:", error));
+            // fetch(`http://localhost:8080/api/employee/get-by-email?email=${encodeURIComponent(email)}`)
+            //     .then(response => {
+            //         if (!response.ok) throw new Error("Không tìm thấy người dùng");
+            //         return response.json();
+            //     })
+            //     .then(data => {
+            //         // Cập nhật giao diện với dữ liệu người dùng
+            //         document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
+            //         document.querySelector(".app-sidebar__user-name").textContent = data.fullName || "Tên không có sẵn";
+            //         document.querySelector(".app-sidebar__user-designation").textContent = data.positionDepartmentID.positionID.positionName || "Vị trí không có sẵn";
+            //         document.getElementById("department").textContent = data.positionDepartmentID.departmentID.departmentName || "Phòng ban không có sẵn";
+            //     })
+            //     .catch(error => console.error("Lỗi khi lấy thông tin người dùng:", error));
         }
     });
 
@@ -195,5 +195,5 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </html>
