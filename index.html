@@ -100,6 +100,8 @@
             class="app-menu__label">Danh sách hợp đồng</span></a></li></a></li>
       <li><a class="app-menu__item" href="/allowances"><i class="app-menu__icon bi bi-wallet2"></i><span
             class="app-menu__label">Quản lý phụ cấp</span></a></li></a></li>
+      <li><a class="app-menu__item" href="/leave-records"><i class="app-menu__icon bi bi-card-list"></i><span
+              class="app-menu__label">Quản lý nghỉ phép</span></a></li></a></li>
     </ul>
 
   </aside>
@@ -167,7 +169,7 @@
           })
           .then(data => {
             // Xử lý thông tin người dùng từ phản hồi nếu cần
-            if (data.message) { // Đây là thông báo mà bạn có thể sử dụng
+            if (data.message) {
               const account = data.message.split(":").pop().trim();
               // Cập nhật giao diện với dữ liệu người dùng nếu cần
               document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
