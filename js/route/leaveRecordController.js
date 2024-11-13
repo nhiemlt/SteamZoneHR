@@ -1,8 +1,9 @@
-app.controller('leaveRecordController', function ($scope, $http) {
+app.controller('leaveRecordController', function ($scope, $http, $routeParams) {
 
     const domain = 'http://localhost:8080';
     const baseUrl = domain + '/api/leaverecords';
 
+    const employeeId = $routeParams.id;
 
     $scope.leaverecords = [];
 
@@ -110,6 +111,20 @@ app.controller('leaveRecordController', function ($scope, $http) {
         // Gọi API với tham số lọc và phân trang
         $scope.getAllLeaverecords($scope.keyword, $scope.fromDate, $scope.toDate, { page: $scope.currentPage, size: $scope.pageSize });
     };
+
+    $scope.getRouteName = function () {
+        $http.get(`${domain}/api/employees/${employeeId}`)
+            .then(response => {
+                $scope.keyword = response.data.fullName;
+                $scope.search();
+            })
+            .catch(error => {
+                console.error('Lỗi khi lấy nhân viên:', error);
+            });
+            
+    }
+
+    $scope.getRouteName()
 
 
     // Hàm chuyển trang

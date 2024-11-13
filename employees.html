@@ -60,9 +60,9 @@
               </thead>
               <tbody>
                 <tr ng-repeat="employee in filteredEmployees">
-                  <td>{{ (page * size) + $index + 1 }}</td>
-                  <td>{{employee.positionID.positionName}}</td>
-                  <td>
+                  <td ng-click="goLeaveRecord(employee.id)">{{ (page * size) + $index + 1 }}</td>
+                  <td ng-click="goLeaveRecord(employee.id)">{{employee.positionID.positionName}}</a></td>
+                  <td ng-click="goLeaveRecord(employee.id)">
                     <img
                       class="rounded-circle me-2"
                       style="width: 25px; height: 25px"
