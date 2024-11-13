@@ -47,6 +47,7 @@ app.controller("positionController", function ($scope, $http) {
   };
   $scope.openUpdateModal = function (department) {
     $scope.selectedDepartment = angular.copy(department);
+
     $("#updateDepartmentModal").modal("show");
   };
   $scope.addDepartment = function () {
@@ -250,7 +251,7 @@ app.controller("positionController", function ($scope, $http) {
       departmentId: $scope.selectedDepartment,
     };
     $http
-      .post(baseURLP, positionModel) // Điều chỉnh endpoint theo API của bạn
+      .post(baseURLP, positionModel)
       .then((response) => {
         Swal.fire("Thành công", "Chức vụ đã được thêm thành công.", "success");
         $scope.newPosition.positionName = "";
@@ -332,17 +333,51 @@ app.controller("positionController", function ($scope, $http) {
       );
       return;
     }
-    // Gửi yêu cầu PUT tới API
+    console.log("Updating position:", $scope.positionToUpdate); // Add this line to log data
+
     $http
       .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
-      .then(function (response) {
-        Swal.fire("Thành công", "Chức vụ đã được cập nhật.", "success");
-        $("#updatePositionModal").modal("hide"); // Đóng modal
-        $scope.getPositions(); // Cập nhật lại danh sách chức vụ
+      .then((response) => {
+        $("#updatePositionModal").modal("hide");
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
+        $scope.getPositions();
       })
-      .catch(function (error) {
+      .catch((error) => {
+        Swal.fire(
+          "Lỗi",
+          error.data.departmentId || "Không thể cập nhật chức vụ.",
+          "error"
+        );
+        console.error("Error updating position:", error);
+      });
+  };
+  $scope.openUpdateModal = function (position) {
+    $scope.positionToUpdate = angular.copy(position);
+    console.log($scope.positionToUpdate);
+    $("#updatePositionModal").modal("show");
+  };
+
+  // Update position
+  $scope.updatePosition = function () {
+    if (
+      !$scope.positionToUpdate.positionName ||
+      $scope.positionToUpdate.positionName.length < 3
+    ) {
+      Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
+      return;
+    }
+
+    $http
+      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
+      .then((response) => {
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
+        $scope.getPositions(); // Refresh the list
+        $scope.positionToUpdate = {}; // Clear the form
+        $("#updatePositionModal").modal("hide"); // Close modal
+      })
+      .catch((error) => {
         console.error("Lỗi khi cập nhật chức vụ:", error);
-        Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ.", "error");
+        Swal.fire("Lỗi", "Cập nhật chức vụ thất bại!", "error");
       });
   };
   $scope.getActiveDepartments();
