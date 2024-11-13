@@ -143,13 +143,9 @@ app.controller("positionController", function ($scope, $http) {
         $http
           .delete(`${baseUrl}/${id}`)
           .then((response) => {
-            // Nếu thành công, hiển thị thông báo thành công
-            if (response.data.status === "success") {
               Swal.fire("Thành công", response.data.message, "success");
-
               // Cập nhật lại danh sách phòng ban
               $scope.getDepartments();
-            }
           })
           .catch((error) => {
             let errorMessage = "Không thể xóa phòng ban.";
@@ -262,7 +258,9 @@ app.controller("positionController", function ($scope, $http) {
       });
   };
 
-  $scope.deletePosition = function (positionId) {
+
+$scope.deletePosition = function (positionId) {
+    // Xác nhận trước khi xóa
     Swal.fire({
         title: "Bạn có chắc chắn muốn xóa chức vụ này?",
         text: "Chức vụ sẽ bị xóa vĩnh viễn!",
@@ -272,28 +270,40 @@ app.controller("positionController", function ($scope, $http) {
         cancelButtonText: "Hủy",
     }).then((result) => {
         if (result.isConfirmed) {
+            // Gửi yêu cầu xóa tới backend
             $http.delete(baseURLP + "/" + positionId)
                 .then((response) => {
-                    // Kiểm tra nếu response.data là một chuỗi
-                    const message = typeof response.data === 'string' ? response.data : response.data.message;
+                    // Kiểm tra nếu response.data là một đối tượng JSON
+                    const message = response.data.message || "Chức vụ đã được xóa thành công.";
                     Swal.fire("Thành công", message, "success");
                     $scope.getPositions(); // Cập nhật danh sách các chức vụ
                 })
                 .catch((error) => {
                     console.log(error);
-                    const errorMessage = typeof error.data === 'string' ? error.data : error.data.message;
-                    
-                    if (error.status === 409) {
-                        Swal.fire("Lỗi", errorMessage, "error");
+                    // Xử lý thông báo lỗi từ backend
+                    let errorMessage = "Có lỗi xảy ra trong quá trình xóa chức vụ.";
+
+                    // Kiểm tra lỗi trả về từ backend và lấy thông điệp từ JSON
+                    if (error.data && error.data.message) {
+                        errorMessage = error.data.message;
+                    } else if (error.status === 409) {
+                        // Lỗi khi không thể xóa do nhân viên đang sử dụng chức vụ
+                        errorMessage = "Không thể xóa chức vụ này vì có nhân viên đang sử dụng nó.";
                     } else if (error.status === 404) {
-                        Swal.fire("Lỗi", errorMessage, "error");
-                    } else {
-                        Swal.fire("Lỗi", "Có lỗi xảy ra trong quá trình xóa chức vụ.", "error");
+                        // Lỗi khi không tìm thấy chức vụ
+                        errorMessage = "Không tìm thấy chức vụ này.";
+                    } else if (error.status === 500) {
+                        // Lỗi nội bộ
+                        errorMessage = "Có lỗi xảy ra trong quá trình xóa chức vụ.";
                     }
+
+                    Swal.fire("Lỗi", errorMessage, "error");
                 });
         }
     });
 };
+
+
 
 
   //

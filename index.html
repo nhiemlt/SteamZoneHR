@@ -21,6 +21,12 @@
   <link rel="stylesheet" type="text/css"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+  <!-- jQuery (make sure jQuery is loaded before other scripts) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -28,14 +34,6 @@
 
   <!-- AngularFire -->
   <script src="https://cdn.jsdelivr.net/npm/angularfire/dist/angularfire.min.js"></script>
-
-  <!-- jQuery (make sure jQuery is loaded before other scripts) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
-
-
 
   <link rel="stylesheet" href="./css/custom.css">
 </head>
@@ -102,6 +100,8 @@
             class="app-menu__label">Danh sách hợp đồng</span></a></li></a></li>
       <li><a class="app-menu__item" href="/allowances"><i class="app-menu__icon bi bi-wallet2"></i><span
             class="app-menu__label">Quản lý phụ cấp</span></a></li></a></li>
+      <li><a class="app-menu__item" href="/leave-records"><i class="app-menu__icon bi bi-card-list"></i><span
+              class="app-menu__label">Quản lý nghỉ phép</span></a></li></a></li>
     </ul>
 
   </aside>
@@ -170,7 +170,6 @@
           .then(data => {
             // Xử lý thông tin người dùng từ phản hồi nếu cần
             if (data.message) {
-              console.log(data.message);  // Đây là thông báo mà bạn có thể sử dụng
               const account = data.message.split(":").pop().trim();
               // Cập nhật giao diện với dữ liệu người dùng nếu cần
               document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
