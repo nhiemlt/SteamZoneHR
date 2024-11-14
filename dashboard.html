@@ -1,64 +1,60 @@
-    <main class="app-content" ng-controller="dashboardController">
-      <div class="app-title">
-        <div>
-          <h1><i class="bi bi-speedometer"></i> Dashboard</h1>
-          <p>A free and open source Bootstrap 5 admin template</p>
-        </div>
-        <ul class="app-breadcrumb breadcrumb">
-          <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-        </ul>
-      </div>
-      <div class="row">
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small primary coloured-icon"><i class="icon bi bi-people fs-1"></i>
-            <div class="info">
-              <h4>Users</h4>
-              <p><b>5</b></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small info coloured-icon"><i class="icon bi bi-heart fs-1"></i>
-            <div class="info">
-              <h4>Likes</h4>
-              <p><b>25</b></p>
-            </div>
-          </div>
-        </div> 
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small warning coloured-icon"><i class="icon bi bi-folder2 fs-1"></i>
-            <div class="info">
-              <h4>Uploades</h4>
-              <p><b>10</b></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small danger coloured-icon"><i class="icon bi bi-star fs-1"></i>
-            <div class="info">
-              <h4>Stars</h4>
-              <p><b>500</b></p>
-            </div>
-          </div>
+<main class="app-content">
+  <div class="app-title text-center">
+    <div>
+      <h1 style="color: #007bff;"><i class="bi bi-person-check"></i> Giới Thiệu về Phần Mềm Quản Lý Nhân Sự Cơ Bản</h1>
+      <p style="font-size: 1.2em; color: #6c757d;">Giải pháp tối ưu cho việc quản lý nhân sự hiệu quả</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb justify-content-center">
+      <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+      <li class="breadcrumb-item"><a href="#">Giới Thiệu</a></li>
+    </ul>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6 d-flex">
+      <div class="tile bg-light border rounded shadow-sm flex-fill">
+        <h3 class="tile-title" style="background-color: #007bff; color: white; padding: 10px; border-radius: 5px;">Về Phần Mềm</h3>
+        <div class="tile-body">
+          <p>Phần mềm Quản Lý Nhân Sự Cơ Bản giúp các doanh nghiệp quản lý thông tin nhân viên hiệu quả. Với giao diện thân thiện và dễ sử dụng, phần mềm hỗ trợ bạn theo dõi và quản lý toàn bộ quy trình nhân sự.</p>
+          <p>Giải pháp toàn diện này giúp tiết kiệm thời gian, giảm thiểu sai sót và nâng cao hiệu quả làm việc của bộ phận nhân sự.</p>
+          <p>Phần mềm phù hợp với các doanh nghiệp vừa và nhỏ, tổ chức phi lợi nhuận, và các cơ quan nhà nước. Giao diện người dùng được thiết kế trực quan, giúp người dùng không có kinh nghiệm công nghệ vẫn có thể sử dụng hiệu quả.</p>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="tile">
-            <h3 class="tile-title">Weekly Sales - Last week</h3>
-            <div class="ratio ratio-16x9">
-              <div id="salesChart"></div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="tile">
-            <h3 class="tile-title">Support Requests</h3>
-            <div class="ratio ratio-16x9">
-              <div id="supportRequestChart"></div>
-            </div>
-          </div>
+    </div>
+
+    <div class="col-md-6 d-flex">
+      <div class="tile bg-light border rounded shadow-sm flex-fill">
+        <h3 class="tile-title" style="background-color: #28a745; color: white; padding: 10px; border-radius: 5px;">Các Tính Năng Chính</h3>
+        <div class="tile-body">
+          <ul style="list-style-type: none; padding-left: 0;">
+            <li>✅ Quản lý nhân viên</li>
+            <li>✅ Quản lý hợp đồng</li>
+            <li>✅ Quản lý nghỉ phép</li>
+            <li>✅ Quản lý phụ cấp</li>
+            <li>✅ Quản lý chức vụ</li>
+            <li>✅ Quản lý phòng ban</li>
+            <li>✅ Quản lý nhân viên phụ cấp</li>
+            <li>✅ Thống kê lương và chấm công</li>
+          </ul>
         </div>
       </div>
-    </main>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="tile bg-light border rounded shadow-sm">
+        <h3 class="tile-title" style="background-color: #ffc107; color: white; padding: 10px; border-radius: 5px;">Lợi Ích Khi Sử Dụng</h3>
+        <div class="tile-body">
+          <ul style="list-style-type: none; padding-left: 0;">
+            <li>✨ Tăng cường hiệu quả quản lý nhân sự</li>
+            <li>✨ Giảm thiểu thủ tục giấy tờ</li>
+            <li>✨ Cải thiện độ chính xác trong thông tin</li>
+            <li>✨ Hỗ trợ ra quyết định tốt hơn</li>
+            <li>✨ Dễ dàng truy cập thông tin từ mọi nơi</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
