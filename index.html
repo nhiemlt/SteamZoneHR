@@ -63,9 +63,8 @@
     <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
         src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Image">
       <div>
+        <p class="app-sidebar__user-designation" style="font-size: 0.7rem;">Chào mừng trở lại</p>
         <p class="app-sidebar__user-name">John Doe</p>
-        <p class="app-sidebar__user-designation" style="font-size: 0.7rem;">Frontend Developer</p>
-        <p class="app-sidebar__user-designation" id="department">Frontend Developer</p>
       </div>
     </div>
     <ul class="app-menu">
@@ -175,9 +174,8 @@
             if (data.message) {
               const account = data.message.split(":").pop().trim();
               // Cập nhật giao diện với dữ liệu người dùng nếu cần
-              document.querySelector(".app-sidebar__user-avatar").src = "https://randomuser.me/api/portraits/men/1.jpg";
+              document.querySelector(".app-sidebar__user-avatar").src = "../images/default-avatar.png";
               document.querySelector(".app-sidebar__user-name").textContent = account;  // Ví dụ từ thông báo
-              document.querySelector(".app-sidebar__user-designation").textContent = "Vị trí không có sẵn";  // Cập nhật nếu cần
             }
           })
           .catch(error => {
