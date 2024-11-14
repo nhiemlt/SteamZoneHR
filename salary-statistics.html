@@ -13,6 +13,31 @@
     <div class="col-md-12">
       <div class="tile">
         <div class="tile-body">
+          <div class="row align-items-end">
+            <div class="col-md-2 mb-3">
+              <label class="form-label">Chế độ xem</label>
+              <select class="form-select" aria-label="Chọn chế độ" ng-model="viewMode" ng-change="toggleMonthSelect()">
+                <option value="" disabled selected>Chọn chế độ</option>
+                <option value="month">Tháng</option>
+                <option value="year">Năm</option>
+            </select>
+            </div>
+
+            <div class="col-md-2 mb-3">
+              <label class="form-label">Năm</label>
+              <select class="form-select" ng-model="selectedYear" ng-change="changeYear()" aria-label="Chọn năm">
+                <option ng-repeat="year in years" ng-value="year">{{ year }}</option>
+            </select>
+             
+            </div>
+
+            <div class="col-md-2 mb-3" ng-show="viewMode === 'month'">
+              <label class="form-label">Tháng</label>
+              <select class="form-select" ng-model="selectedMonth" ng-change="changeMonth()" aria-label="Chọn tháng">
+                <option ng-repeat="month in months" ng-value="month.value">{{ month.label }}</option>
+            </select>
+            </div>
+          </div>
           <div class="table-responsive">
             <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="salary-statistics">
               <thead>
@@ -44,6 +69,19 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="pagination">
+    <ul class="pagination">
+      <li class="page-item" ng-class="{disabled: currentPage === 1}">
+        <a class="page-link" ng-click="goToPage(currentPage - 1)">«</a>
+      </li>
+      <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index" ng-class="{active: currentPage === $index + 1}">
+        <a class="page-link" ng-click="goToPage($index + 1)">{{ $index + 1 }}</a>
+      </li>
+      <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+        <a class="page-link" ng-click="goToPage(currentPage + 1)">»</a>
+      </li>
+    </ul>
   </div>
 </main>
 
