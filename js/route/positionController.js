@@ -262,6 +262,7 @@ app.controller("positionController", function ($scope, $http) {
         console.error("Lỗi khi thêm chức vụ:", error);
       });
   };
+
   $scope.deletePosition = function (positionId) {
     // Xác nhận trước khi xóa
     Swal.fire({
@@ -291,8 +292,6 @@ app.controller("positionController", function ($scope, $http) {
             } else if (error.status === 404) {
               Swal.fire("Lỗi", "Không tìm thấy chức vụ này.", "error");
             } else {
-              console.log("à nhon xê ô" + error);
-
               Swal.fire(
                 "Lỗi",
                 "Có lỗi xảy ra trong quá trình xóa chức vụ.",
@@ -304,7 +303,6 @@ app.controller("positionController", function ($scope, $http) {
     });
   };
 
-  //
   // Lấy thông tin chức vụ để cập nhật
   $scope.loadPositionForUpdate = function (positionId) {
     $http
@@ -319,67 +317,51 @@ app.controller("positionController", function ($scope, $http) {
         Swal.fire("Lỗi", "Không thể lấy thông tin chức vụ.", "error");
       });
   };
-
-  // Cập nhật chức vụ
-  $scope.updatePosition = function () {
-    if (
-      !$scope.positionToUpdate.positionName ||
-      !$scope.positionToUpdate.departmentId
-    ) {
-      Swal.fire(
-        "Lỗi",
-        "Vui lòng điền đầy đủ thông tin chức vụ và phòng ban.",
-        "error"
-      );
-      return;
-    }
-    console.log("Updating position:", $scope.positionToUpdate); // Add this line to log data
-
-    $http
-      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
-      .then((response) => {
-        $("#updatePositionModal").modal("hide");
-        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
-        $scope.getPositions();
-      })
-      .catch((error) => {
-        Swal.fire(
-          "Lỗi",
-          error.data.departmentId || "Không thể cập nhật chức vụ.",
-          "error"
-        );
-        console.error("Error updating position:", error);
-      });
-  };
+  
   $scope.openUpdateModal = function (position) {
     $scope.positionToUpdate = angular.copy(position);
-    console.log($scope.positionToUpdate);
     $("#updatePositionModal").modal("show");
   };
 
   // Update position
   $scope.updatePosition = function () {
+    // Kiểm tra tên chức vụ trước khi gửi
     if (
       !$scope.positionToUpdate.positionName ||
       $scope.positionToUpdate.positionName.length < 3
     ) {
-      Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
-      return;
+        Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
+        return;
     }
 
+    // Gửi request PUT với dữ liệu cập nhật
     $http
-      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
-      .then((response) => {
-        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
-        $scope.getPositions(); // Refresh the list
-        $scope.positionToUpdate = {}; // Clear the form
-        $("#updatePositionModal").modal("hide"); // Close modal
-      })
-      .catch((error) => {
-        console.error("Lỗi khi cập nhật chức vụ:", error);
-        Swal.fire("Lỗi", "Cập nhật chức vụ thất bại!", "error");
-      });
-  };
+        .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
+        .then((response) => {
+            Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
+            $scope.getPositions(); // Refresh danh sách chức vụ
+            $scope.positionToUpdate = {}; // Xóa form
+            $("#updatePositionModal").modal("hide"); // Đóng modal
+        })
+        .catch((error) => {
+            console.error("Lỗi khi cập nhật chức vụ:", error);
+
+            // Kiểm tra lỗi cụ thể từ backend
+            if (error.status === 400 && error.data) {
+                let errorMessage = "Cập nhật thất bại. Lỗi dữ liệu nhập vào:";
+                // Hiển thị từng lỗi cụ thể từ bindingResult
+                for (const [field, message] of Object.entries(error.data)) {
+                    errorMessage += `\n- ${field}: ${message}`;
+                }
+                Swal.fire("Lỗi", errorMessage, "error");
+            } else if (error.status === 404) {
+                Swal.fire("Lỗi", "Không tìm thấy chức vụ với id: " + $scope.positionToUpdate.id, "error");
+            } else {
+                Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ!", "error");
+            }
+        });
+};
+
   $scope.getActiveDepartments();
   $scope.getDepartments();
   $scope.getPositions();

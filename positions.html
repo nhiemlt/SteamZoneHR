@@ -197,13 +197,12 @@
           </div>
           <div class="form-group">
             <label for="departments">Phòng ban liên kết</label><br />
-            <select class="form-control" ng-model="positionToUpdate.departmentID">
+            <select class="form-control" ng-model="positionToUpdate.departmentId">
               <option value="" selected disabled>Chọn phòng ban</option>
               <option ng-repeat="department in activeDepartment2s" ng-value="department.id">
                 {{department.departmentName}}
               </option>
             </select>
-
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
