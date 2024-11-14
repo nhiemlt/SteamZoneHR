@@ -7,10 +7,13 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
+    "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "connect-history-api-fallback": "^2.0.0",
     "http-proxy-middleware": "^3.0.3",
-    "lite-server": "^2.6.1"
+    "lite-server": "^2.6.1",
+    "postcss": "^8.4.49",
+    "sass": "^1.80.7"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
