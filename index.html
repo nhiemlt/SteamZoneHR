@@ -24,16 +24,15 @@
 
   <!-- jQuery (make sure jQuery is loaded before other scripts) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-<!-- Bao gồm Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Bao gồm Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDK phiên bản 8.x -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
   <!-- AngularFire -->
   <script src="https://cdn.jsdelivr.net/npm/angularfire/dist/angularfire.min.js"></script>
@@ -104,7 +103,7 @@
       <li><a class="app-menu__item" href="/allowances"><i class="app-menu__icon bi bi-wallet2"></i><span
             class="app-menu__label">Quản lý phụ cấp</span></a></li></a></li>
       <li><a class="app-menu__item" href="/leave-records"><i class="app-menu__icon bi bi-card-list"></i><span
-              class="app-menu__label">Quản lý nghỉ phép</span></a></li></a></li>
+            class="app-menu__label">Quản lý nghỉ phép</span></a></li></a></li>
     </ul>
 
   </aside>
@@ -129,7 +128,7 @@
   <script src="./js/route/positionController.js"></script>
   <script src="./js/route/positionDepartmentController.js"></script>
   <script src="./js/route/leaveRecordController.js"></script>
-  
+
 
   <!-- Thêm vào phần <head> hoặc trước khi bạn tải script AngularJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
