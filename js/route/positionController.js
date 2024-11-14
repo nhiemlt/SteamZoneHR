@@ -45,7 +45,7 @@ app.controller("positionController", function ($scope, $http) {
       $scope.currentDepartmentPage = page;
     }
   };
-  $scope.openUpdateModal = function (department) {
+  $scope.openUpdateModal1 = function (department) {
     $scope.selectedDepartment = angular.copy(department);
 
     $("#updateDepartmentModal").modal("show");
@@ -62,7 +62,16 @@ app.controller("positionController", function ($scope, $http) {
       Swal.fire("Lỗi", "Tên phòng ban phải có ít nhất 3 ký tự.", "error");
       return;
     }
+    const duplicate = $scope.departments.some(
+      (department) =>
+        department.departmentName.trim().toLowerCase() ===
+        $scope.newDepartment.departmentName.trim().toLowerCase()
+    );
 
+    if (duplicate) {
+      Swal.fire("Lỗi", "Tên phòng ban đã tồn tại trong hệ thống.", "error");
+      return;
+    }
     $http
       .post(baseUrl, $scope.newDepartment)
       .then((response) => {
@@ -84,6 +93,17 @@ app.controller("positionController", function ($scope, $http) {
       $scope.selectedDepartment.departmentName.length < 3
     ) {
       Swal.fire("Lỗi", "Tên phòng ban phải có ít nhất 3 ký tự.", "error");
+      return;
+    }
+    const duplicate = $scope.departments.some(
+      (department) =>
+        department.departmentName.trim().toLowerCase() ===
+          $scope.selectedDepartment.departmentName.trim().toLowerCase() &&
+        department.id !== id
+    );
+
+    if (duplicate) {
+      Swal.fire("Lỗi", "Tên phòng ban đã tồn tại trong hệ thống.", "error");
       return;
     }
     $http
@@ -159,17 +179,13 @@ app.controller("positionController", function ($scope, $http) {
             if (error.status === 409) {
               // Nếu lỗi là do phòng ban đang được tham chiếu
               errorMessage =
-                error.data.message ||
                 "Không thể xóa phòng ban này vì có chức vụ đang sử dụng.";
             } else if (error.status === 404) {
               // Nếu không tìm thấy phòng ban
-              errorMessage =
-                error.data.message || "Không tìm thấy phòng ban với id: " + id;
+              errorMessage = "Không tìm thấy phòng ban với id: " + id;
             } else if (error.status === 500) {
               // Lỗi server
-              errorMessage =
-                error.data.message ||
-                "Có lỗi xảy ra trong quá trình xóa phòng ban.";
+              errorMessage = "Có lỗi xảy ra trong quá trình xóa phòng ban.";
             }
             Swal.fire("Lỗi", errorMessage, "error");
           });
@@ -189,7 +205,7 @@ app.controller("positionController", function ($scope, $http) {
   };
   $scope.positions = [];
   $scope.currentPositionPage = 1;
-  $scope.positionItemsPerPage = 5;
+  $scope.positionItemsPerPage = 10;
   $scope.selectedPosition = {};
   $scope.newPosition = {};
   $scope.positionToUpdate = {};
@@ -233,6 +249,7 @@ app.controller("positionController", function ($scope, $http) {
       $scope.getPaginatedPositions(); // Lấy dữ liệu cho trang mới
     }
   };
+
   //  thêm
   $scope.addPosition = function () {
     if (
@@ -246,6 +263,25 @@ app.controller("positionController", function ($scope, $http) {
       Swal.fire("Lỗi", "Vui lòng chọn phòng ban.", "error");
       return;
     }
+    const departmentPositions = $scope.positions.filter(
+      (position) => position.departmentId === $scope.selectedDepartment
+    );
+
+    const duplicate = departmentPositions.some(
+      (position) =>
+        position.positionName.trim().toLowerCase() ===
+        $scope.newPosition.positionName.trim().toLowerCase()
+    );
+
+    if (duplicate) {
+      Swal.fire(
+        "Lỗi",
+        "Tên chức vụ đã tồn tại trong phòng ban đã chọn.",
+        "error"
+      );
+      return;
+    }
+
     const positionModel = {
       positionName: $scope.newPosition.positionName,
       departmentId: $scope.selectedDepartment,
@@ -254,9 +290,9 @@ app.controller("positionController", function ($scope, $http) {
       .post(baseURLP, positionModel)
       .then((response) => {
         Swal.fire("Thành công", "Chức vụ đã được thêm thành công.", "success");
-        $scope.newPosition.positionName = "";
-        $scope.selectedDepartment = "";
-        $scope.getPositions();
+        $scope.newPosition = {};
+        $scope.selectedDepartment = null;
+        $scope.getPositions(); // Refresh positions list
       })
       .catch((error) => {
         console.error("Lỗi khi thêm chức vụ:", error);
@@ -317,7 +353,7 @@ app.controller("positionController", function ($scope, $http) {
         Swal.fire("Lỗi", "Không thể lấy thông tin chức vụ.", "error");
       });
   };
-  
+
   $scope.openUpdateModal = function (position) {
     $scope.positionToUpdate = angular.copy(position);
     $("#updatePositionModal").modal("show");
@@ -330,37 +366,41 @@ app.controller("positionController", function ($scope, $http) {
       !$scope.positionToUpdate.positionName ||
       $scope.positionToUpdate.positionName.length < 3
     ) {
-        Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
-        return;
+      Swal.fire("Lỗi", "Tên chức vụ phải có ít nhất 3 ký tự.", "error");
+      return;
     }
 
     // Gửi request PUT với dữ liệu cập nhật
     $http
-        .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
-        .then((response) => {
-            Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
-            $scope.getPositions(); // Refresh danh sách chức vụ
-            $scope.positionToUpdate = {}; // Xóa form
-            $("#updatePositionModal").modal("hide"); // Đóng modal
-        })
-        .catch((error) => {
-            console.error("Lỗi khi cập nhật chức vụ:", error);
+      .put(baseURLP + "/" + $scope.positionToUpdate.id, $scope.positionToUpdate)
+      .then((response) => {
+        Swal.fire("Thành công", "Chức vụ đã được cập nhật!", "success");
+        $scope.getPositions(); // Refresh danh sách chức vụ
+        $scope.positionToUpdate = {}; // Xóa form
+        $("#updatePositionModal").modal("hide"); // Đóng modal
+      })
+      .catch((error) => {
+        console.error("Lỗi khi cập nhật chức vụ:", error);
 
-            // Kiểm tra lỗi cụ thể từ backend
-            if (error.status === 400 && error.data) {
-                let errorMessage = "Cập nhật thất bại. Lỗi dữ liệu nhập vào:";
-                // Hiển thị từng lỗi cụ thể từ bindingResult
-                for (const [field, message] of Object.entries(error.data)) {
-                    errorMessage += `\n- ${field}: ${message}`;
-                }
-                Swal.fire("Lỗi", errorMessage, "error");
-            } else if (error.status === 404) {
-                Swal.fire("Lỗi", "Không tìm thấy chức vụ với id: " + $scope.positionToUpdate.id, "error");
-            } else {
-                Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ!", "error");
-            }
-        });
-};
+        // Kiểm tra lỗi cụ thể từ backend
+        if (error.status === 400 && error.data) {
+          let errorMessage = "Cập nhật thất bại. Lỗi dữ liệu nhập vào:";
+          // Hiển thị từng lỗi cụ thể từ bindingResult
+          for (const [field, message] of Object.entries(error.data)) {
+            errorMessage += `\n- ${field}: ${message}`;
+          }
+          Swal.fire("Lỗi", errorMessage, "error");
+        } else if (error.status === 404) {
+          Swal.fire(
+            "Lỗi",
+            "Không tìm thấy chức vụ với id: " + $scope.positionToUpdate.id,
+            "error"
+          );
+        } else {
+          Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật chức vụ!", "error");
+        }
+      });
+  };
 
   $scope.getActiveDepartments();
   $scope.getDepartments();
