@@ -36,29 +36,43 @@ app.controller('overtimeScheduleController', function ($scope, $http) {
     if (!startDate) {
       return;
     }
-
+  
     const year = startDate.getFullYear();
     const month = String(startDate.getMonth() + 1).padStart(2, '0'); // Tháng cần +1 vì getMonth() trả về từ 0-11
     const day = String(startDate.getDate()).padStart(2, '0');
-
+  
     const startDateStr = `${year}-${month}-${day}`;
-
+  
     // Gọi API chỉ với ngày bắt đầu
     $http.get(`${domain}/api/overtimes?startDate=${startDateStr}`)
       .then(response => {
         $scope.overtimeData = response.data.content[0];
+        console.log("Giờ chuẩn: ",$scope.overtimeData.startTime , $scope.overtimeData.endTime);
+  
         // Kiểm tra xem có dữ liệu nào được trả về trong content không
         if (response.data.content && response.data.content.length > 0) {
           const overtimeData = response.data.content[0]; // Lấy phần tử đầu tiên trong content
-
+          const overtimeDate = overtimeData.overtimeDate; // Giả sử định dạng 'YYYY-MM-DD'
+  
           // Gán startTime và endTime vào $scope.newSchedule
-          $scope.newSchedule.startTime = new Date('1970-01-01T' + overtimeData.startTime + 'Z'); // Định dạng thành HH:mm
-          $scope.newSchedule.endTime = new Date('1970-01-01T' + overtimeData.endTime + 'Z');
-          $scope.newSchedule.hourlyRate = overtimeData.hourlyRate;
+          // Chuyển thời gian UTC sang múi giờ địa phương (GMT+7)
+          $scope.newSchedule.startTime = new Date(`${overtimeDate}T${overtimeData.startTime}Z`);
+          $scope.newSchedule.endTime = new Date(`${overtimeDate}T${overtimeData.endTime}Z`);
+          
+          // Trừ đi 7 giờ từ startTime và endTime
+          $scope.newSchedule.startTime.setHours($scope.newSchedule.startTime.getHours() - 7);
+          $scope.newSchedule.endTime.setHours($scope.newSchedule.endTime.getHours() - 7);
+          
+          // Kiểm tra kết quả
+          console.log("Giờ bắt đầu sau khi trừ 7 giờ:", $scope.newSchedule.startTime);
+          console.log("Giờ kết thúc sau khi trừ 7 giờ:", $scope.newSchedule.endTime);
 
+  
+          $scope.newSchedule.hourlyRate = overtimeData.hourlyRate;
+  
           // Lấy danh sách employeeID từ overtimerecords
           $scope.selectedEmployeeIds = overtimeData.overtimerecords.map(record => record.employeeID);
-
+  
           console.log("Danh sách nhân viên có lịch làm thêm theo ngày bắt đầu:", $scope.selectedEmployeeIds);
         } else {
           console.log("Không có dữ liệu làm thêm khớp với ngày bắt đầu");
@@ -68,6 +82,7 @@ app.controller('overtimeScheduleController', function ($scope, $http) {
         console.error('Lỗi khi lấy dữ liệu làm thêm:', error);
       });
   };
+  
 
   $scope.resetSelection = function () {
     // Xóa danh sách các ID nhân viên đã chọn
@@ -124,13 +139,12 @@ app.controller('overtimeScheduleController', function ($scope, $http) {
   }
   $scope.addOvertime = () => {
     const newOvertime = {
-      overtimeDate: $scope.selectedSchedule.scheduleDate.toISOString(),
+      overtimeDate: $scope.selectedSchedule.scheduleDate,
       startTime: formatTime($scope.selectedSchedule.startTime),
       endTime: formatTime($scope.selectedSchedule.endTime),
       hourlyRate: $scope.selectedSchedule.hourlyRate,
       employeeIds: $scope.selectedEmployeeIds
     }
-    console.log(newOvertime);
     
     if (newOvertime.endTime <= newOvertime.startTime) {
       showAlert("Lỗi", "Thời gian kết thúc phải sau thời gian bắt đầu.", "error");
@@ -141,6 +155,9 @@ app.controller('overtimeScheduleController', function ($scope, $http) {
       showAlert("Lỗi", "Ngày làm thêm không được là ngày trong quá khứ.", "error");
       return;
     }
+
+    console.log(newOvertime);
+
     $http.post(`${domain}/api/overtimes`, newOvertime)
       .then(response => {
         showAlert("Thành công", "Tạo lịch thành công thành công", "success");
@@ -157,7 +174,7 @@ app.controller('overtimeScheduleController', function ($scope, $http) {
   }
   $scope.updateOvertime = () => {
     const newOvertime = {
-      overtimeDate: $scope.newSchedule.startDate.toISOString(),
+      overtimeDate: $scope.newSchedule.startDate,
       startTime: formatTime($scope.newSchedule.startTime),
       endTime: formatTime($scope.newSchedule.endTime),
       hourlyRate: $scope.newSchedule.hourlyRate,
