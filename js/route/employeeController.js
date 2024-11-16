@@ -118,13 +118,13 @@ app.controller("employeeController", function ($scope, $http, $location) {
         img.onload = function () {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          
+
           // Đặt kích thước mới của ảnh (giảm kích thước)
           const MAX_WIDTH = 100;
           const MAX_HEIGHT = 100;
           let width = img.width;
           let height = img.height;
-  
+
           // Giữ tỉ lệ gốc của ảnh
           if (width > height) {
             if (width > MAX_WIDTH) {
@@ -137,12 +137,12 @@ app.controller("employeeController", function ($scope, $http, $location) {
               height = MAX_HEIGHT;
             }
           }
-  
+
           // Vẽ lại ảnh vào canvas với kích thước mới
           canvas.width = width;
           canvas.height = height;
           ctx.drawImage(img, 0, 0, width, height);
-  
+
           // Chuyển canvas thành Base64
           $scope.selectedEmployee.avatarURL = canvas.toDataURL('image/jpeg'); // Lưu Base64 vào avatarURL
           $scope.$apply(); // Cập nhật giao diện
@@ -152,9 +152,9 @@ app.controller("employeeController", function ($scope, $http, $location) {
       reader.readAsDataURL(file); // Đọc file ảnh dưới dạng Base64
     }
   };
-  
 
-  
+
+
   $scope.previewNewImage = function (event) {
     const file = event.target.files[0]; // Lấy tệp ảnh từ input file
     if (file) {
@@ -164,13 +164,13 @@ app.controller("employeeController", function ($scope, $http, $location) {
         img.onload = function () {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          
+
           // Đặt kích thước mới của ảnh (giảm kích thước)
           const MAX_WIDTH = 100;
           const MAX_HEIGHT = 100;
           let width = img.width;
           let height = img.height;
-  
+
           // Giữ tỉ lệ gốc của ảnh
           if (width > height) {
             if (width > MAX_WIDTH) {
@@ -183,12 +183,12 @@ app.controller("employeeController", function ($scope, $http, $location) {
               height = MAX_HEIGHT;
             }
           }
-  
+
           // Vẽ lại ảnh vào canvas với kích thước mới
           canvas.width = width;
           canvas.height = height;
           ctx.drawImage(img, 0, 0, width, height);
-  
+
           // Chuyển canvas thành Base64
           $scope.newEmployee.avatarURL = canvas.toDataURL('image/jpeg'); // Lưu Base64 vào avatarURL
           $scope.$apply(); // Cập nhật giao diện
@@ -197,7 +197,7 @@ app.controller("employeeController", function ($scope, $http, $location) {
       };
       reader.readAsDataURL(file); // Đọc file ảnh dưới dạng Base64
     }
-  };  
+  };
 
 
   $scope.addEmployee = function () {
@@ -236,22 +236,8 @@ app.controller("employeeController", function ($scope, $http, $location) {
       return; // Dừng lại nếu thiếu thông tin
     }
 
-    // Kiểm tra và chuyển ảnh sang Base64 nếu có
-    if ($scope.newEmployee.avatarURL) {
-      convertToBase64($scope.newEmployee.avatarURL)
-        .then((base64Image) => {
-          $scope.newEmployee.avatarFile = base64Image; // Cập nhật Base64 vào dữ liệu nhân viên
-          saveEmployeeData();
-        })
-        .catch((error) => {
-          console.error("Lỗi khi chuyển ảnh thành Base64:", error);
-          Swal.fire("Lỗi", "Có lỗi xảy ra khi chuyển ảnh thành Base64", "error");
-        });
-    } else {
-      // Nếu không có hình ảnh mới, sử dụng ảnh cũ (nếu có)
-      $scope.newEmployee.avatarFile = $scope.newEmployee.avatarURL || null; // Sử dụng ảnh cũ hoặc null
-      saveEmployeeData();
-    }
+    $scope.newEmployee.avatarFile = $scope.newEmployee.avatarURL || null; // Sử dụng ảnh cũ hoặc null
+    saveEmployeeData();
 
     // Hàm gửi dữ liệu nhân viên lên API
     function saveEmployeeData() {
@@ -279,20 +265,6 @@ app.controller("employeeController", function ($scope, $http, $location) {
           console.error("Lỗi khi thêm nhân viên:", error);
           Swal.fire("Lỗi", "Có lỗi xảy ra khi thêm nhân viên. Vui lòng thử lại.", "error");
         });
-    }
-
-    // Hàm chuyển đổi ảnh thành Base64
-    function convertToBase64(image) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          resolve(reader.result); // Trả về kết quả Base64
-        };
-        reader.onerror = function (error) {
-          reject(error); // Lỗi khi đọc file
-        };
-        reader.readAsDataURL(image); // Đọc file hình ảnh dưới dạng Base64
-      });
     }
   };
 

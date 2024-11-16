@@ -9,7 +9,6 @@ app.config(function ($routeProvider, $locationProvider) {
         { path: "/employees", template: "employees.html", controller: "employeeController" },
         { path: "/positions", template: "positions.html", controller: "positionController" },
         { path: "/departments", template: "departments.html", controller: "departmentController" },
-        { path: "/attendance", template: "attendance.html", controller: "attendanceController" },
         { path: "/contracts", template: "contracts.html", controller: "contractController" },
         { path: "/overtime", template: "overtime.html", controller: "overtimeController" },
         { path: "/overtime-schedule", template: "overtime-schedule.html", controller: "overtimeScheduleController" },

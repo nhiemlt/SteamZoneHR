@@ -14,7 +14,7 @@ app.controller('leaveRecordController', function ($scope, $http, $routeParams) {
             params: {
                 keyword: searchKeyword,
                 page: page,
-                size: size 
+                size: size
             }
         })
             .then(response => {
@@ -113,12 +113,14 @@ app.controller('leaveRecordController', function ($scope, $http, $routeParams) {
         $http.get(`${domain}/api/employees/${employeeId}`)
             .then(response => {
                 $scope.keyword = response.data.fullName;
-                $scope.search();
+                setTimeout(function () {
+                    $scope.search();
+                }, 50);
             })
             .catch(error => {
                 console.error('Lỗi khi lấy nhân viên:', error);
             });
-            
+
     }
 
     $scope.getRouteName()
