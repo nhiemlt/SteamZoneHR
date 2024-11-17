@@ -1,145 +1,84 @@
 <main class="app-content" ng-controller="overtimeScheduleController">
+  <!-- Header -->
   <div class="app-title">
     <div>
-      <h1><i class="bi bi-speedometer"></i> Tăng ca</h1>
+      <h1><i class="bi bi-speedometer"></i> Quản lý Tăng ca</h1>
     </div>
     <ul class="app-breadcrumb breadcrumb">
       <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
       <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
     </ul>
   </div>
-  <!-- Bảng Lịch làm thêm giờ -->
-  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <button class="nav-link active" id="nav-home-tab"
-      data-bs-toggle="tab"
-      data-bs-target="#nav-createAndUpdateOvertime" type="button" role="tab"
-      aria-controls="nav-createAndUpdateOvertime" aria-selected="true">Tạo
-      lịch</button>
-    <button class="nav-link" id="nav-delete-tab" data-bs-toggle="tab"
-      data-bs-target="#nav-delete" type="button" role="tab"
-      aria-controls="nav-delete" aria-selected="false">Xóa lịch</button>
-  </div>
-  <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-createAndUpdateOvertime"
-      role="tabpanel"
-      aria-labelledby="nav-createAndUpdateOvertime-tab" tabindex="0">
+
+  <!-- Tabs chính -->
+  <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link active" id="createTab" data-bs-toggle="tab" data-bs-target="#createTabContent"
+        type="button" role="tab">
+        Tạo lịch
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="updateTab" data-bs-toggle="tab" data-bs-target="#updateTabContent" type="button"
+        role="tab">
+        Cập nhật lịch
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="deleteTab" data-bs-toggle="tab" data-bs-target="#deleteTabContent" type="button"
+        role="tab">
+        Xóa lịch
+      </button>
+    </li>
+  </ul>
+
+  <!-- Nội dung của Tabs -->
+  <div class="tab-content mt-3" id="mainTabContent">
+    <!-- Tab: Tạo lịch -->
+    <div class="tab-pane fade show active" id="createTabContent" role="tabpanel" aria-labelledby="createTab">
       <div class="card">
         <div class="card-body">
           <div class="col-md-12">
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <button class="nav-link active" id="nav-home-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#nav-createOvertime" type="button" role="tab"
-                aria-controls="nav-createOvertime" aria-selected="true">Tạo
-                lịch</button>
-              <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
-                data-bs-target="#nav-fillter" type="button" role="tab"
-                aria-controls="nav-fillter" aria-selected="false">Lọc cập
-                nhật</button>
-            </div>
             <div class="tab-content mt-3" id="nav-tabContent">
-              <div class="tab-pane fade show active" id="nav-createOvertime"
-                role="tabpanel"
-                aria-labelledby="nav-createOvertime-tab" tabindex="0">
-                <div class="row">
-                  <div class="col-md-3 mb-3">
-                    <label class="form-label">Ngày làm thêm:</label>
-                    <input type="date" class="form-control"
-                      placeholder="Nhập ngày làm thêm"
-                      ng-model="selectedSchedule.scheduleDate">
-                  </div>
-                  <div class="col-md-2 mb-3">
-                    <label class="form-label">Thời gian bắt đầu:</label>
-                    <input type="time" class="form-control"
-                      placeholder="Nhập thời gian bắt đầu"
-                      ng-model="selectedSchedule.startTime"
-                      ng-change="filterEmployees()">
-                  </div>
-                  <div class="col-md-2 mb-3">
-                    <label class="form-label">Thời gian kết thúc:</label>
-                    <input type="time" class="form-control"
-                      placeholder="Nhập thời gian kết thúc"
-                      ng-model="selectedSchedule.endTime"
-                      ng-change="filterEmployees()">
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <label class="form-label">Tiền công:</label>
-                    <input type="number" class="form-control"
-                      placeholder="Nhập tiền công"
-                      ng-model="selectedSchedule.hourlyRate"
-                      ng-change="filterEmployees()">
-                  </div>
-                  <div class="col-md-2 mb-3 mt-3">
-                    <label class="form-label"></label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value
-                        id="selectAllCheckbox" ng-model="selectAll"
-                        ng-change="toggleSelectAll()">
-                      <label class="form-check-label"
-                        for="selectAllCheckbox">Chọn
-                        tất cả nhân viên</label>
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-end mb-2">
-                    <button class="btn btn-primary"
-                      ng-click="addOvertime()">Lưu</button>
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Ngày làm thêm:</label>
+                  <input type="date" class="form-control" placeholder="Nhập ngày làm thêm"
+                    ng-model="selectedSchedule.scheduleDate">
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label class="form-label">Thời gian bắt đầu:</label>
+                  <input type="time" class="form-control" placeholder="Nhập thời gian bắt đầu"
+                    ng-model="selectedSchedule.startTime" ng-change="filterEmployees()">
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label class="form-label">Thời gian kết thúc:</label>
+                  <input type="time" class="form-control" placeholder="Nhập thời gian kết thúc"
+                    ng-model="selectedSchedule.endTime" ng-change="filterEmployees()">
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Tiền công:</label>
+                  <input type="number" class="form-control" placeholder="Nhập tiền công"
+                    ng-model="selectedSchedule.hourlyRate" ng-change="filterEmployees()">
+                </div>
+                <div class="col-md-2 mb-3 mt-3">
+                  <label class="form-label"></label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value id="selectAllCheckbox" ng-model="selectAll"
+                      ng-change="toggleSelectAll()">
+                    <label class="form-check-label" for="selectAllCheckbox">Chọn
+                      tất cả nhân viên</label>
                   </div>
                 </div>
-              </div>
-              <div class="tab-pane fade" id="nav-fillter" role="tabpanel"
-                aria-labelledby="nav-fillter-tab" tabindex="0">
-                <div class="row">
-                  <div class="col-md-3 mb-3">
-                    <label class="form-label">Ngày bắt đầu:</label>
-                    <input type="date" class="form-control"
-                      placeholder="Nhập ngày bắt đầu"
-                      ng-model="newSchedule.startDate"
-                      ng-change="filterOvertime()">
-                    <!-- Gọi filterEmployees khi thay đổi -->
-                  </div>
-                  <div class="col-md-2 mb-3">
-                    <label class="form-label">Thời gian bắt đầu:</label>
-                    <input type="time" class="form-control"
-                      ng-model="newSchedule.startTime"
-                      ng-change="filterOvertime()">
-                  </div>
-
-                  <div class="col-md-2 mb-3">
-                    <label class="form-label">Thời gian kết thúc:</label>
-                    <input type="time" class="form-control"
-                      ng-model="newSchedule.endTime"
-                      ng-change="filterOvertime()">
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <label class="form-label">Tiền công:</label>
-                    <input type="number" class="form-control"
-                      placeholder="Nhập tiền công"
-                      ng-model="newSchedule.hourlyRate"
-                      ng-change="filterEmployees()">
-                  </div>
-                  <div class="col-md-2 mb-3 mt-3">
-                    <label class="form-label"></label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value
-                        id="selectAllCheckbox" ng-model="selectAll"
-                        ng-change="toggleSelectAll()">
-                      <label class="form-check-label"
-                        for="selectAllCheckbox">Chọn
-                        tất cả nhân viên</label>
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-end mb-2">
-                    <button class="btn btn-primary"
-                      ng-click="updateOvertime()">Cập nhật</button>
-                  </div>
+                <div class="d-flex justify-content-end mb-2">
+                  <button class="btn btn-primary" ng-click="addOvertime()">Lưu</button>
                 </div>
               </div>
             </div>
 
             <div class="tile-body">
               <div class="table-responsive">
-                <table class="table table-hover table-bordered table-sm"
-                  style="font-size: 12px;" id="employees">
+                <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="employees">
                   <thead>
                     <tr class="text-center">
                       <th>Chọn</th>
@@ -155,8 +94,7 @@
                   <tbody>
                     <tr ng-repeat="employee in employees">
                       <td>
-                        <input type="checkbox" class="form-check-input"
-                          ng-click="toggleEmployeeSelection(employee.id)"
+                        <input type="checkbox" class="form-check-input" ng-click="toggleEmployeeSelection(employee.id)"
                           ng-checked="selectAll || (selectedEmployeeIds.includes(employee.id))"
                           id="defaultCheck{{$index}}">
 
@@ -164,8 +102,7 @@
                       <td>{{employee.positionID.positionName}} -
                         {{employee.positionID.departmentName}}</td>
                       <td>
-                        <img class="rounded-circle me-2"
-                          style="width: 25px; height: 25px;"
+                        <img class="rounded-circle me-2" style="width: 25px; height: 25px;"
                           ng-src="{{employee.avatarURL}}">{{employee.fullName}}
                       </td>
                       <td>{{employee.gender ? 'Nam' : 'Nữ'}}</td>
@@ -178,10 +115,8 @@
                 </table>
                 <div class="pagination-container">
                   <ul class="pagination justify-content-center mt-3">
-                    <li class="page-item"
-                      ng-class="{'disabled': currentPage === 0}">
-                      <button class="page-link"
-                        ng-click="getEmployees(currentPage - 1)"
+                    <li class="page-item" ng-class="{'disabled': currentPage === 0}">
+                      <button class="page-link" ng-click="getEmployees(currentPage - 1)"
                         ng-disabled="currentPage === 0">
                         Trang trước
                       </button>
@@ -190,10 +125,8 @@
                       <span class="page-link">Trang {{currentPage + 1}} /
                         {{totalPages}}</span>
                     </li>
-                    <li class="page-item"
-                      ng-class="{'disabled': currentPage === totalPages - 1}">
-                      <button class="page-link"
-                        ng-click="getEmployees(currentPage + 1)"
+                    <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
+                      <button class="page-link" ng-click="getEmployees(currentPage + 1)"
                         ng-disabled="currentPage === totalPages - 1">
                         Trang tiếp theo
                       </button>
@@ -206,43 +139,90 @@
         </div>
       </div>
     </div>
-    <div class="tab-pane fade show active" id="nav-delete"
-      role="tabpanel"
-      aria-labelledby="nav-delete-tab" tabindex="0">
+
+    <!-- Tab: Cập nhật lịch -->
+    <div class="tab-pane fade" id="updateTabContent" role="tabpanel" aria-labelledby="updateTab">
       <div class="card">
         <div class="card-body">
           <div class="col-md-12">
+            <div class="tab-content mt-3" id="nav-tabContent">
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Ngày bắt đầu:</label>
+                  <input type="date" class="form-control" placeholder="Nhập ngày bắt đầu"
+                    ng-model="newSchedule.startDate" ng-change="filterOvertime()">
+                  <!-- Gọi filterEmployees khi thay đổi -->
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label class="form-label">Thời gian bắt đầu:</label>
+                  <input type="time" class="form-control" ng-model="newSchedule.startTime" ng-change="filterOvertime()">
+                </div>
+
+                <div class="col-md-2 mb-3">
+                  <label class="form-label">Thời gian kết thúc:</label>
+                  <input type="time" class="form-control" ng-model="newSchedule.endTime" ng-change="filterOvertime()">
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Tiền công:</label>
+                  <input type="number" class="form-control" placeholder="Nhập tiền công"
+                    ng-model="newSchedule.hourlyRate" ng-change="filterEmployees()">
+                </div>
+                <div class="col-md-2 mb-3 mt-3">
+                  <label class="form-label"></label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value id="selectAllCheckbox" ng-model="selectAll"
+                      ng-change="toggleSelectAll()">
+                    <label class="form-check-label" for="selectAllCheckbox">Chọn
+                      tất cả nhân viên</label>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end mb-2">
+                  <button class="btn btn-primary" ng-click="updateOvertime()">Cập nhật</button>
+                </div>
+              </div>
+            </div>
+
             <div class="tile-body">
               <div class="table-responsive">
-                <table class="table table-hover table-bordered table-sm"
-                  style="font-size: 12px;" id="employees">
+                <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="employees">
                   <thead>
                     <tr class="text-center">
-                      <th>Mã lịch tăng ca</th>
-                      <th>Ngày tăng ca</th>
-                      <th>Giờ bắt đầu</th>
-                      <th>Giờ kết thúc</th>
-                      <th>Tiền tăng ca</th>
-                      <th>Hành động</th>
+                      <th>Chọn</th>
+                      <th>Chức vụ - Phòng ban</th>
+                      <th>Nhân viên</th>
+                      <th>Giới tính</th>
+                      <th>Ngày sinh</th>
+                      <th>Email</th>
+                      <th>SĐT</th>
+                      <th>Địa chỉ</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr ng-repeat="overtime in overtimes">
-                      <td>{{overtime.id}}</td>
-                      <td>{{overtime.overtimeDate}}</td>
-                      <td>{{overtime.startTime}}</td>
-                      <td>{{overtime.endTime }}</td>
-                      <td>{{overtime.hourlyRate}}</td>
-                      <td class="text-center"><button class="btn btn-danger" ng-click="deleteOvertime(overtime)">Xóa</button></td>
+                    <tr ng-repeat="employee in employees">
+                      <td>
+                        <input type="checkbox" class="form-check-input" ng-click="toggleEmployeeSelection(employee.id)"
+                          ng-checked="selectAll || (selectedEmployeeIds.includes(employee.id))"
+                          id="defaultCheck{{$index}}">
+
+                      </td>
+                      <td>{{employee.positionID.positionName}} -
+                        {{employee.positionID.departmentName}}</td>
+                      <td>
+                        <img class="rounded-circle me-2" style="width: 25px; height: 25px;"
+                          ng-src="{{employee.avatarURL}}">{{employee.fullName}}
+                      </td>
+                      <td>{{employee.gender ? 'Nam' : 'Nữ'}}</td>
+                      <td>{{employee.birthDate | date: 'dd/MM/yyyy'}}</td>
+                      <td>{{employee.email}}</td>
+                      <td>{{employee.phoneNumber}}</td>
+                      <td>{{employee.address}}</td>
                     </tr>
                   </tbody>
                 </table>
-                <!-- <div class="pagination-container">
+                <div class="pagination-container">
                   <ul class="pagination justify-content-center mt-3">
-                    <li class="page-item"
-                      ng-class="{'disabled': currentPage === 0}">
-                      <button class="page-link"
-                        ng-click="getEmployees(currentPage - 1)"
+                    <li class="page-item" ng-class="{'disabled': currentPage === 0}">
+                      <button class="page-link" ng-click="getEmployees(currentPage - 1)"
                         ng-disabled="currentPage === 0">
                         Trang trước
                       </button>
@@ -251,22 +231,54 @@
                       <span class="page-link">Trang {{currentPage + 1}} /
                         {{totalPages}}</span>
                     </li>
-                    <li class="page-item"
-                      ng-class="{'disabled': currentPage === totalPages - 1}">
-                      <button class="page-link"
-                        ng-click="getEmployees(currentPage + 1)"
+                    <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
+                      <button class="page-link" ng-click="getEmployees(currentPage + 1)"
                         ng-disabled="currentPage === totalPages - 1">
                         Trang tiếp theo
                       </button>
                     </li>
                   </ul>
-                </div> -->
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
+    <!-- Tab: Xóa lịch -->
+    <div class="tab-pane fade" id="deleteTabContent" role="tabpanel" aria-labelledby="deleteTab">
+      <div class="card">
+        <div class="card-header">Xóa lịch tăng ca</div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr class="text-center">
+                  <th>Mã lịch</th>
+                  <th>Ngày</th>
+                  <th>Bắt đầu</th>
+                  <th>Kết thúc</th>
+                  <th>Tiền công</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="overtime in overtimes">
+                  <td>{{overtime.id}}</td>
+                  <td>{{overtime.overtimeDate | date:'dd/MM/yyyy'}}</td>
+                  <td>{{overtime.startTime}}</td>
+                  <td>{{overtime.endTime}}</td>
+                  <td>{{overtime.hourlyRate}}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteOvertime(overtime)">Xóa</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
