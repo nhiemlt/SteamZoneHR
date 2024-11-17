@@ -34,6 +34,7 @@
             <div class="col-md-2 mb-3" ng-show="viewMode === 'month'">
               <label class="form-label">Tháng</label>
               <select class="form-select" ng-model="selectedMonth" ng-change="changeMonth()" aria-label="Chọn tháng">
+                <option value="" disabled selected>Chọn tháng</option>
                 <option ng-repeat="month in months" ng-value="month.value">{{ month.label }}</option>
             </select>
             </div>
@@ -41,30 +42,38 @@
           <div class="table-responsive">
             <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="salary-statistics">
               <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên nhân viên</th>
-                  <th>Chức vụ</th>
-                  <th>Phòng ban</th>
-                  <th>Lương cơ bản</th>
-                  <th>Tổng phụ cấp</th>
-                  <th>Tiền làm thêm</th>
-                  <th>Tổng lương</th>
-                </tr>
+                  <tr>
+                      <th>STT</th>
+                      <th>Tên nhân viên</th>
+                      <th>Chức vụ</th>
+                      <th>Phòng ban</th>
+                      <th>Số giờ làm thêm</th>
+                      <th>Tiền làm thêm</th>
+                      <th>Lương cơ bản</th>
+                      <th>Thời gian làm việc</th> 
+                      <th>Số ngày nghỉ</th>
+                      <th>Tổng lương cơ bản</th>
+                      <th>Tổng phụ cấp</th>
+                      <th>Tổng cộng</th>
+                  </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="employee in employees">
-                  <td>{{$index + 1}}</td>
-                  <td>{{employee.fullName}}</td>
-                  <td>{{employee.positionName}}</td>
-                  <td>{{employee.departmentName}}</td>
-                  <td>{{ employee.salary | number:0 }} ₫</td>
-                  <td>{{ employee.totalAllowance | number:0 }}</td>
-                  <td>{{ employee.totalOvertimeHours | number:0 }} ₫</td>
-                  <td>{{ (employee.totalSalary) | number:0 }} ₫</td>
-              </tr>
+                  <tr ng-repeat="employee in employees">
+                      <td>{{$index + 1}}</td>
+                      <td>{{employee.employeeName}}</td>
+                      <td>{{employee.position || 'Chưa xác định'}}</td>
+                      <td>{{employee.department || 'Chưa xác định'}}</td> 
+                      <td>{{employee.overtimeHours | number:0}}</td>
+                      <td>{{employee.overtimeMoneys | number:0}} ₫</td>
+                      <td>{{employee.baseSalary | number:0}} ₫</td>
+                      <td>{{employee.workDays | number:0}} tháng</td>
+                      <td>{{employee.leaveDays | number:0}}</td>
+                      <td>{{employee.totalBaseSalary | number:0}} ₫</td>
+                      <td>{{employee.allowance | number:0}} ₫</td>
+                      <td>{{employee.totalSalary | number:0}} ₫</td>
+                  </tr>
               </tbody>
-            </table>
+          </table>          
           </div>
         </div>
       </div>

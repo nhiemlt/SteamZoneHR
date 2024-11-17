@@ -74,18 +74,8 @@
     <ul class="app-menu">
       <li><a class="app-menu__item active" href="/dashboard"><i class="app-menu__icon bi bi-speedometer"></i><span
             class="app-menu__label">Giới thiệu</span></a></li>
-
-      <li class="treeview"><a class="app-menu__item" data-toggle="treeview"><i
-            class="app-menu__icon bi bi-bar-chart"></i><span class="app-menu__label">Thống kê</span><i
-            class="treeview-indicator bi bi-chevron-right"></i></a>
-        <ul class="treeview-menu">
-          <li><a class="treeview-item" href="/salary-statistics"><i class="icon bi bi-arrow-return-right"></i> Thống kê
-              Lương</a></li>
-          <li><a class="treeview-item" href="/attendance-statistics"><i class="icon bi bi-arrow-return-right"></i> Thống
-              kê Chấm công</a></li>
-        </ul>
-      </li>
-
+      <li><a class="app-menu__item" href="/salary-statistics"><i class="app-menu__icon bi bi-bar-chart"></i> <span
+        class="app-menu__label">Thống kê</span></a></li>
       <li><a class="app-menu__item" href="/overtime-schedule"><i class="app-menu__icon bi bi-clock"></i> <span
             class="app-menu__label">Lịch tăng ca</span></a></li>
       <li><a class="app-menu__item" href="/employees"><i class="app-menu__icon bi bi-person"></i><span
@@ -176,7 +166,7 @@
             // In lỗi ra console nếu có
             console.error("Lỗi khi lấy thông tin người dùng:", error);
             // Hiển thị thông báo lỗi cho người dùng nếu cần
-            alert("Lỗi: " + error.message);
+            console.log("Lỗi: " + error.message);
           });
       }
     });

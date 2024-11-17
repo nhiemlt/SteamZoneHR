@@ -14,7 +14,7 @@ app.controller('allowancesController', function ($scope, $http) {
         const today = new Date();
         return today <= new Date(endDate);
     };
-    
+
     $scope.sortData = function (column) {
         if ($scope.sortColumn === column) {
             $scope.sortReverse = !$scope.sortReverse;
@@ -153,6 +153,7 @@ app.controller('allowancesController', function ($scope, $http) {
             $scope.selectedEmployeeIds.push(employeeId);
         }
     };
+
     $scope.toggleEmployeeSelectionupdate = (employeeId) => {
         // Kiểm tra nếu employeeId đã tồn tại trong employeeallowances
         const employeeIndex = $scope.selectedEmployeeAllowance.employeeallowances.findIndex(emp => emp.employeeID.id === employeeId);
@@ -190,7 +191,7 @@ app.controller('allowancesController', function ($scope, $http) {
             showAlert("Lỗi", "Ngày kết thúc phải lớn hơn ngày bắt đầu", "error");
             return;
         }
-    
+
         $http.post(`${domain}/api/allowances`, newEmployeeAllowance)
             .then(response => {
                 console.log("API Response: ", response);
@@ -201,13 +202,13 @@ app.controller('allowancesController', function ($scope, $http) {
             .catch(error => {
                 // Log error for debugging
                 console.log(error);
-    
+
                 let errorMessage = "Có lỗi xảy ra, vui lòng kiểm tra lại.";
-    
+
                 // Nếu API trả về lỗi chi tiết từ backend
                 if (error.data && error.data.message) {
                     errorMessage = error.data.message;
-                } 
+                }
                 // Xử lý lỗi từ status code 400 hoặc các lỗi cụ thể khác nếu cần
                 else if (error.status === 400 && error.data) {
                     // Kiểm tra lỗi theo các trường hợp cụ thể (ví dụ: trường "allowanceName")
@@ -215,19 +216,19 @@ app.controller('allowancesController', function ($scope, $http) {
                         errorMessage = error.data.allowanceName;
                     } else if (error.data.amount) {
                         errorMessage = error.data.amount;
-                    }else if(error.data.startDate){
+                    } else if (error.data.startDate) {
                         errorMessage = error.data.startDate;
-                    }else if(error.data.endDate){
+                    } else if (error.data.endDate) {
                         errorMessage = error.data.endDate;
                     }
                     // Bạn có thể thêm các trường hợp lỗi khác tại đây (như 'startDate', 'endDate'...)
                 }
-    
+
                 // Hiển thị thông báo lỗi
                 showAlert("Lỗi", errorMessage, "error");
             });
     };
-    
+
     // Cập nhật phụ cấp cho nhân viên
     $scope.updateAllowanceEmployee = () => {
         const employeeIds = $scope.selectedEmployeeAllowance.employeeallowances.map(allowance => allowance.employeeID.id);
@@ -268,6 +269,21 @@ app.controller('allowancesController', function ($scope, $http) {
                 }
             });
     };
+
+    $scope.remove = (id) => {
+        $http.delete(`${domain}/api/allowances/` + id)
+            .then(response => {
+                $scope.getAllowances();
+                    showAlert("Thành công", "Xóa phụ cấp thành công", "success");
+            })
+            .catch(error => {
+                showAlert("Lỗi", "Lỗi hệ thống: Không thể xóa dữ liệu. Vui lòng thử lại sau.", "error");
+                console.log(error)
+            });
+    }
+
+
+
     function showAlert(title, text, icon) {
         Swal.fire({
             title: title,
