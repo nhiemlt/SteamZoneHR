@@ -285,14 +285,15 @@ app.controller('contractController', function ($scope, $http) {
     // Chuẩn bị dữ liệu để cập nhật hợp đồng
     const contractData = {
       employeeID: $scope.selectedEmployee?.employee.id,
-      salary: $scope.selectedContract.salary,
+      salary: $scope.selectedContract.salary ? $scope.selectedContract.salary : 0 ,
       signingDate: $scope.selectedContract.signingDate ? new Date($scope.selectedContract.signingDate).toISOString() : null,
       startDate: $scope.selectedContract.startDate ? new Date($scope.selectedContract.startDate).toISOString() : null,
       endDate: $scope.selectedContract.endDate ? new Date($scope.selectedContract.endDate).toISOString() : null
     };
 
     // Kiểm tra lỗi đầu vào
-    if (!contractData.employeeID || !contractData.salary || !contractData.startDate || !contractData.endDate || !contractData.signingDate) {
+    if (!contractData.employeeID || contractData.salary<0 || contractData.salary==null  || !contractData.startDate || !contractData.endDate || !contractData.signingDate) {
+      console.log(contractData.salary)
       console.error("Vui lòng điền đầy đủ các trường bắt buộc.");
       Swal.fire({
         title: "Lỗi",

@@ -1,11 +1,11 @@
 <main class="app-content" ng-controller="salaryStatisticsController">
   <div class="app-title">
     <div>
-      <h1><i class="bi bi-speedometer"></i> Danh sách thống kê lương</h1>
+      <h1><i class="bi bi-speedometer"></i> Danh sách thống kê</h1>
     </div>
     <ul class="app-breadcrumb breadcrumb">
       <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-      <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="#">Thống kê</a></li>
     </ul>
   </div>
 
@@ -60,7 +60,8 @@
               <tbody>
                   <tr ng-repeat="employee in employees">
                       <td>{{$index + 1}}</td>
-                      <td>{{employee.employeeName}}</td>
+                      <td><img class="rounded-circle me-2" style="width: 25px; height: 25px"
+                        ng-src="{{employee.avatar}}" /> {{employee.employeeName}}</td>
                       <td>{{employee.position || 'Chưa xác định'}}</td>
                       <td>{{employee.department || 'Chưa xác định'}}</td> 
                       <td>{{employee.overtimeHours | number:0}}</td>
