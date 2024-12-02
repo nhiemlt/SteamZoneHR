@@ -108,19 +108,97 @@ app.controller("employeeController", function ($scope, $http, $location) {
     $("#updateModal").modal("show");
   };
 
-  // Preview hình ảnh
-  $scope.previewNewImage = function () {
-    const file = $scope.newEmployee.hinhanhFile;
+  // Hàm hiển thị hình ảnh trước khi upload
+  $scope.previewImage = function (event) {
+    const file = event.target.files[0]; // Lấy tệp ảnh từ input file
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        $scope.$apply(() => {
-          $scope.newEmployee.hinhanh = e.target.result;
-        });
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          // Đặt kích thước mới của ảnh (giảm kích thước)
+          const MAX_WIDTH = 100;
+          const MAX_HEIGHT = 100;
+          let width = img.width;
+          let height = img.height;
+
+          // Giữ tỉ lệ gốc của ảnh
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          // Vẽ lại ảnh vào canvas với kích thước mới
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Chuyển canvas thành Base64
+          $scope.selectedEmployee.avatarURL = canvas.toDataURL('image/jpeg'); // Lưu Base64 vào avatarURL
+          $scope.$apply(); // Cập nhật giao diện
+        };
+        img.src = e.target.result; // Đọc ảnh từ FileReader
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Đọc file ảnh dưới dạng Base64
     }
   };
+
+
+
+  $scope.previewNewImage = function (event) {
+    const file = event.target.files[0]; // Lấy tệp ảnh từ input file
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          // Đặt kích thước mới của ảnh (giảm kích thước)
+          const MAX_WIDTH = 100;
+          const MAX_HEIGHT = 100;
+          let width = img.width;
+          let height = img.height;
+
+          // Giữ tỉ lệ gốc của ảnh
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          // Vẽ lại ảnh vào canvas với kích thước mới
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Chuyển canvas thành Base64
+          $scope.newEmployee.avatarURL = canvas.toDataURL('image/jpeg'); // Lưu Base64 vào avatarURL
+          $scope.$apply(); // Cập nhật giao diện
+        };
+        img.src = e.target.result; // Đọc ảnh từ FileReader
+      };
+      reader.readAsDataURL(file); // Đọc file ảnh dưới dạng Base64
+    }
+  };
+
 
   $scope.addEmployee = function () {
     // Kiểm tra các dữ liệu đã có trong danh sách nhân viên
@@ -130,28 +208,25 @@ app.controller("employeeController", function ($scope, $http, $location) {
         emp.phoneNumber === $scope.newEmployee.phoneNumber ||
         emp.idcardNumber === $scope.newEmployee.idcardNumber
     );
+
     if (existingEmployee) {
       // Kiểm tra trường nào bị trùng và hiển thị lỗi tương ứng
       if (existingEmployee.email === $scope.newEmployee.email) {
         Swal.fire("Lỗi", "Email đã tồn tại.", "error");
-      } else if (
-        existingEmployee.phoneNumber === $scope.newEmployee.phoneNumber
-      ) {
+      } else if (existingEmployee.phoneNumber === $scope.newEmployee.phoneNumber) {
         Swal.fire("Lỗi", "Số điện thoại đã tồn tại.", "error");
-      } else if (
-        existingEmployee.idcardNumber === $scope.newEmployee.idcardNumber
-      ) {
+      } else if (existingEmployee.idcardNumber === $scope.newEmployee.idcardNumber) {
         Swal.fire("Lỗi", "CCCD đã tồn tại.", "error");
       }
       return; // Dừng việc thêm nhân viên nếu có lỗi trùng
     }
-    if (
-      !$scope.newEmployee.fullName ||
-      $scope.newEmployee.fullName.length <= 2
-    ) {
+
+    // Kiểm tra các trường thông tin
+    if (!$scope.newEmployee.fullName || $scope.newEmployee.fullName.length <= 2) {
       Swal.fire("Lỗi", "Họ tên phải có ít nhất 3 ký tự.", "error");
       return;
     }
+
     if (
       !$scope.newEmployee.email ||
       !$scope.newEmployee.phoneNumber ||
@@ -160,38 +235,40 @@ app.controller("employeeController", function ($scope, $http, $location) {
       Swal.fire("Lỗi", "Vui lòng nhập đầy đủ thông tin.", "error");
       return; // Dừng lại nếu thiếu thông tin
     }
-    // Gửi yêu cầu thêm nhân viên đến API
-    $http
-      .post(baseUrl, $scope.newEmployee)
-      .then((response) => {
-        Swal.fire("Thành công", "Thêm nhân viên thành công", "success");
-        $scope.getEmployees(); // Cập nhật danh sách nhân viên
-        $("#addModal").modal("hide"); // Đóng modal sau khi thêm
-      })
-      .catch((error) => {
-        // Kiểm tra mã lỗi và thông báo từ API
-        if (error.status === 400) {
-          Swal.fire(
-            "Lỗi",
-            "Dữ liệu gửi lên không hợp lệ. Vui lòng kiểm tra lại.",
-            "error"
-          );
-        } else if (error.status === 500) {
-          Swal.fire("Lỗi", "Có lỗi từ server. Vui lòng thử lại sau.", "error");
-        } else if (error.data && error.data.message) {
-          Swal.fire("Lỗi", error.data.message, "error");
-        } else {
-          Swal.fire(
-            "Lỗi",
-            "Có lỗi xảy ra khi thêm nhân viên. Vui lòng thử lại.",
-            "error"
-          );
-        }
-        console.error("Lỗi khi thêm nhân viên:", error);
-      });
+
+    $scope.newEmployee.avatarFile = $scope.newEmployee.avatarURL || null; // Sử dụng ảnh cũ hoặc null
+    saveEmployeeData();
+
+    // Hàm gửi dữ liệu nhân viên lên API
+    function saveEmployeeData() {
+      const newEmployeeData = {
+        fullName: $scope.newEmployee.fullName,
+        gender: $scope.newEmployee.gender,
+        birthDate: $scope.newEmployee.birthDate,
+        address: $scope.newEmployee.address,
+        email: $scope.newEmployee.email,
+        phoneNumber: $scope.newEmployee.phoneNumber,
+        positionID: $scope.newEmployee.positionID,
+        idcardNumber: $scope.newEmployee.idcardNumber,
+        isActive: $scope.newEmployee.isActive,
+        avatarURL: $scope.newEmployee.avatarFile || $scope.newEmployee.avatarURL, // Đảm bảo avatar được gửi đúng
+      };
+
+      $http
+        .post(baseUrl, newEmployeeData)
+        .then((response) => {
+          Swal.fire("Thành công", "Thêm nhân viên thành công", "success");
+          $scope.getEmployees(); // Cập nhật danh sách nhân viên
+          $("#addModal").modal("hide"); // Đóng modal sau khi thêm
+        })
+        .catch((error) => {
+          console.error("Lỗi khi thêm nhân viên:", error);
+          Swal.fire("Lỗi", "Có lỗi xảy ra khi thêm nhân viên. Vui lòng thử lại.", "error");
+        });
+    }
   };
 
-  // Cập nhật nhân viên
+
   $scope.updateEmployee = function () {
     const updatedEmployee = {
       id: $scope.selectedEmployee.id,
@@ -204,69 +281,38 @@ app.controller("employeeController", function ($scope, $http, $location) {
       positionID: $scope.selectedEmployee.positionID.id,
       idcardNumber: $scope.selectedEmployee.idcardNumber,
       isActive: $scope.selectedEmployee.isActive,
+      avatarURL: $scope.selectedEmployee.avatarFile || $scope.selectedEmployee.avatarURL,
     };
+
     // Kiểm tra trùng lặp email, số điện thoại, và CCCD
     const existingEmployee = $scope.employees.find(
       (emp) =>
-        (emp.email === $scope.selectedEmployee.email &&
-          emp.id !== $scope.selectedEmployee.id) ||
-        (emp.phoneNumber === $scope.selectedEmployee.phoneNumber &&
-          emp.id !== $scope.selectedEmployee.id) ||
-        (emp.idcardNumber === $scope.selectedEmployee.idcardNumber &&
-          emp.id !== $scope.selectedEmployee.id)
+        (emp.email === $scope.selectedEmployee.email && emp.id !== $scope.selectedEmployee.id) ||
+        (emp.phoneNumber === $scope.selectedEmployee.phoneNumber && emp.id !== $scope.selectedEmployee.id) ||
+        (emp.idcardNumber === $scope.selectedEmployee.idcardNumber && emp.id !== $scope.selectedEmployee.id)
     );
-    if (
-      !$scope.newEmployee.fullName ||
-      $scope.newEmployee.fullName.length <= 2
-    ) {
+
+    // Kiểm tra dữ liệu nhập vào
+    if (!$scope.selectedEmployee.fullName || $scope.selectedEmployee.fullName.length <= 2) {
       Swal.fire("Lỗi", "Họ tên phải có ít nhất 3 ký tự.", "error");
       return;
     }
+
     if (existingEmployee) {
       // Kiểm tra trường nào bị trùng và hiển thị lỗi
       if (existingEmployee.email === $scope.selectedEmployee.email) {
         Swal.fire("Lỗi", "Email đã tồn tại.", "error");
-      } else if (
-        existingEmployee.phoneNumber === $scope.selectedEmployee.phoneNumber
-      ) {
+      } else if (existingEmployee.phoneNumber === $scope.selectedEmployee.phoneNumber) {
         Swal.fire("Lỗi", "Số điện thoại đã tồn tại.", "error");
-      } else if (
-        existingEmployee.idcardNumber === $scope.selectedEmployee.idcardNumber
-      ) {
+      } else if (existingEmployee.idcardNumber === $scope.selectedEmployee.idcardNumber) {
         Swal.fire("Lỗi", "CCCD đã tồn tại.", "error");
       }
       return;
     }
-    // Kiểm tra độ dài của các trường quan trọng
-    if (
-      !$scope.selectedEmployee.fullName ||
-      $scope.selectedEmployee.fullName.length <= 2
-    ) {
-      Swal.fire("Lỗi", "Họ tên phải có ít nhất 3 ký tự.", "error");
-      return; // Dừng lại nếu họ tên không hợp lệ
-    }
-    if (
-      !$scope.selectedEmployee.email ||
-      $scope.selectedEmployee.email.length <= 2
-    ) {
-      Swal.fire("Lỗi", "Email phải có ít nhất 3 ký tự.", "error");
-      return; // Dừng lại nếu email không hợp lệ
-    }
-    if (
-      !$scope.selectedEmployee.phoneNumber ||
-      $scope.selectedEmployee.phoneNumber.length <= 2
-    ) {
-      Swal.fire("Lỗi", "Số điện thoại phải có ít nhất 3 ký tự.", "error");
-      return; // Dừng lại nếu số điện thoại không hợp lệ
-    }
-    if (
-      !$scope.selectedEmployee.idcardNumber ||
-      $scope.selectedEmployee.idcardNumber.length <= 2
-    ) {
-      Swal.fire("Lỗi", "CCCD phải có ít nhất 3 ký tự.", "error");
-      return; // Dừng lại nếu CCCD không hợp lệ
-    }
-    // Gửi yêu cầu cập nhật nhân viên đến API
+
+    console.log(updatedEmployee);
+
+    // Gửi yêu cầu cập nhật nhân viên
     $http
       .put(baseUrl + "/" + $scope.selectedEmployee.id, updatedEmployee)
       .then((response) => {
@@ -275,27 +321,12 @@ app.controller("employeeController", function ($scope, $http, $location) {
         $("#updateModal").modal("hide"); // Đóng modal sau khi cập nhật
       })
       .catch((error) => {
-        // Xử lý lỗi từ backend
-        if (error.status === 400) {
-          Swal.fire(
-            "Lỗi",
-            "Dữ liệu gửi lên không hợp lệ. Vui lòng kiểm tra lại.",
-            "error"
-          );
-        } else if (error.status === 500) {
-          Swal.fire("Lỗi", "Có lỗi từ server. Vui lòng thử lại sau.", "error");
-        } else if (error.data && error.data.message) {
-          Swal.fire("Lỗi", error.data.message, "error"); // Thông báo lỗi từ backend
-        } else {
-          Swal.fire(
-            "Lỗi",
-            "Có lỗi xảy ra khi cập nhật nhân viên. Vui lòng thử lại.",
-            "error"
-          );
-        }
-        console.error("Lỗi khi cập nhật nhân viên:", error); // Log chi tiết lỗi vào console để dễ debug
+        console.error("Lỗi khi cập nhật nhân viên:", error);
+        Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật nhân viên. Vui lòng thử lại.", "error");
       });
   };
+
+
 
   // xoá nhân viên
   $scope.deleteEmployee = function (employeeId) {

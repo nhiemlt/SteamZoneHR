@@ -1,11 +1,11 @@
-<main class="app-content">
+<main class="app-content" ng-controller="salaryStatisticsController">
   <div class="app-title">
     <div>
-      <h1><i class="bi bi-speedometer"></i> Danh sách thống kê lương</h1>
+      <h1><i class="bi bi-speedometer"></i> Danh sách thống kê</h1>
     </div>
     <ul class="app-breadcrumb breadcrumb">
       <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-      <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="#">Thống kê</a></li>
     </ul>
   </div>
 
@@ -13,39 +13,85 @@
     <div class="col-md-12">
       <div class="tile">
         <div class="tile-body">
+          <div class="row align-items-end">
+            <div class="col-md-2 mb-3">
+              <label class="form-label">Chế độ xem</label>
+              <select class="form-select" aria-label="Chọn chế độ" ng-model="viewMode" ng-change="toggleMonthSelect()">
+                <option value="" disabled selected>Chọn chế độ</option>
+                <option value="month">Tháng</option>
+                <option value="year">Năm</option>
+            </select>
+            </div>
+
+            <div class="col-md-2 mb-3">
+              <label class="form-label">Năm</label>
+              <select class="form-select" ng-model="selectedYear" ng-change="changeYear()" aria-label="Chọn năm">
+                <option ng-repeat="year in years" ng-value="year">{{ year }}</option>
+            </select>
+             
+            </div>
+
+            <div class="col-md-2 mb-3" ng-show="viewMode === 'month'">
+              <label class="form-label">Tháng</label>
+              <select class="form-select" ng-model="selectedMonth" ng-change="changeMonth()" aria-label="Chọn tháng">
+                <option value="" disabled selected>Chọn tháng</option>
+                <option ng-repeat="month in months" ng-value="month.value">{{ month.label }}</option>
+            </select>
+            </div>
+          </div>
           <div class="table-responsive">
             <table class="table table-hover table-bordered table-sm" style="font-size: 12px;" id="salary-statistics">
               <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên nhân viên</th>
-                  <th>Chức vụ</th>
-                  <th>Phòng ban</th>
-                  <th>Lương cơ bản</th>
-                  <th>Tổng phụ cấp</th>
-                  <th>Tiền làm thêm</th>
-                  <th>Tổng lương</th>
-                </tr>
+                  <tr>
+                      <th>STT</th>
+                      <th>Tên nhân viên</th>
+                      <th>Chức vụ</th>
+                      <th>Phòng ban</th>
+                      <th>Số giờ làm thêm</th>
+                      <th>Tiền làm thêm</th>
+                      <th>Lương cơ bản</th>
+                      <th>Thời gian làm việc</th> 
+                      <th>Số ngày nghỉ</th>
+                      <th>Tổng lương cơ bản</th>
+                      <th>Tổng phụ cấp</th>
+                      <th>Tổng cộng</th>
+                  </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="employee in employees">
-                  <td>{{$index + 1}}</td>
-                  <td>{{employee.fullName}}</td>
-                  <td>{{employee.positionName}}</td>
-                  <td>{{employee.departmentName}}</td>
-                  <td>{{ employee.salary | number:0 }} ₫</td>
-                  <td>{{ employee.totalAllowance | number:0 }}</td>
-                  <td>{{ employee.totalOvertimeHours | number:0 }} ₫</td>
-                  <td>{{ (employee.totalSalary) | number:0 }} ₫</td>
-              </tr>
+                  <tr ng-repeat="employee in employees">
+                      <td>{{$index + 1}}</td>
+                      <td><img class="rounded-circle me-2" style="width: 25px; height: 25px"
+                        ng-src="{{employee.avatar}}" /> {{employee.employeeName}}</td>
+                      <td>{{employee.position || 'Chưa xác định'}}</td>
+                      <td>{{employee.department || 'Chưa xác định'}}</td> 
+                      <td>{{employee.overtimeHours | number:0}}</td>
+                      <td>{{employee.overtimeMoneys | number:0}} ₫</td>
+                      <td>{{employee.baseSalary | number:0}} ₫</td>
+                      <td>{{employee.workDays | number:0}} tháng</td>
+                      <td>{{employee.leaveDays | number:0}}</td>
+                      <td>{{employee.totalBaseSalary | number:0}} ₫</td>
+                      <td>{{employee.allowance | number:0}} ₫</td>
+                      <td>{{employee.totalSalary | number:0}} ₫</td>
+                  </tr>
               </tbody>
-            </table>
+          </table>          
           </div>
         </div>
       </div>
     </div>
   </div>
+  <div class="pagination">
+    <ul class="pagination">
+      <li class="page-item" ng-class="{disabled: currentPage === 1}">
+        <a class="page-link" ng-click="goToPage(currentPage - 1)">«</a>
+      </li>
+      <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index" ng-class="{active: currentPage === $index + 1}">
+        <a class="page-link" ng-click="goToPage($index + 1)">{{ $index + 1 }}</a>
+      </li>
+      <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+        <a class="page-link" ng-click="goToPage(currentPage + 1)">»</a>
+      </li>
+    </ul>
+  </div>
 </main>
-<script>
- 
-</script>
+

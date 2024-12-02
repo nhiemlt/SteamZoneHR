@@ -25,17 +25,17 @@
 
             <div class="col-md-2 mb-3">
               <label class="form-label">Năm</label>
-              <select class="form-select" ng-model="selectedYear" ng-change="fetchAttendanceData(selectedMonth, selectedYear)" aria-label="Chọn năm">
+              <select class="form-select" ng-model="selectedYear" ng-change="changeYear()" aria-label="Chọn năm">
                 <option ng-repeat="year in years" ng-value="year">{{ year }}</option>
-              </select>
+            </select>
              
             </div>
 
             <div class="col-md-2 mb-3" ng-show="viewMode === 'month'">
               <label class="form-label">Tháng</label>
-              <select class="form-select" ng-model="selectedMonth" ng-change="fetchAttendanceData(selectedMonth, selectedYear)" aria-label="Chọn tháng">
+              <select class="form-select" ng-model="selectedMonth" ng-change="changeMonth()" aria-label="Chọn tháng">
                 <option ng-repeat="month in months" ng-value="month.value">{{ month.label }}</option>
-              </select>
+            </select>
             </div>
           </div>
           <div class="table-responsive">

@@ -1,64 +1,68 @@
-    <main class="app-content" ng-controller="dashboardController">
-      <div class="app-title">
-        <div>
-          <h1><i class="bi bi-speedometer"></i> Dashboard</h1>
-          <p>A free and open source Bootstrap 5 admin template</p>
-        </div>
-        <ul class="app-breadcrumb breadcrumb">
-          <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-        </ul>
+<main class="app-content mt-0 bg-light">
+  <section class="px-5 my-md-5">
+    <div class="container">
+      <div class="col-md-6 col-xl-4">
       </div>
-      <div class="row">
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small primary coloured-icon"><i class="icon bi bi-people fs-1"></i>
-            <div class="info">
-              <h4>Users</h4>
-              <p><b>5</b></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small info coloured-icon"><i class="icon bi bi-heart fs-1"></i>
-            <div class="info">
-              <h4>Likes</h4>
-              <p><b>25</b></p>
-            </div>
-          </div>
-        </div> 
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small warning coloured-icon"><i class="icon bi bi-folder2 fs-1"></i>
-            <div class="info">
-              <h4>Uploades</h4>
-              <p><b>10</b></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-          <div class="widget-small danger coloured-icon"><i class="icon bi bi-star fs-1"></i>
-            <div class="info">
-              <h4>Stars</h4>
-              <p><b>500</b></p>
-            </div>
-          </div>
+      
+      <div class="row justify-content-center text-center mb-3">
+        <div class="col-lg-8 col-xl-7">
+          <h3 class="display-7 fw-bold">Phân mềm quản lý nhân sự</h3>
+          <h1 class="display-5 fw-bold">STEAMZONE MEKONG HR</h1>
+          <p class="lead">Nhiều tính năng hỗ trợ quản lý công việc hiệu quả từ thống kê đến quản lý nhân sự và chính sách công ty.</p>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="tile">
-            <h3 class="tile-title">Weekly Sales - Last week</h3>
-            <div class="ratio ratio-16x9">
-              <div id="salesChart"></div>
-            </div>
+      <div class="row g-4 g-md-5">
+        <div class="col-md-6 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-bar-chart" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Thống kê</h5>
           </div>
+          <p>Thống kê lương tại <a href="/salary-statistics">Thống kê</a>.</p>
         </div>
-        <div class="col-md-6">
-          <div class="tile">
-            <h3 class="tile-title">Support Requests</h3>
-            <div class="ratio ratio-16x9">
-              <div id="supportRequestChart"></div>
-            </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-clock" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Lịch tăng ca</h5>
           </div>
+          <p>Theo dõi thời gian làm việc tại <a href="/overtime-schedule">Lịch tăng ca</a>.</p>
+        </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-person" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Nhân sự</h5>
+          </div>
+          <p>Quản lý thông tin nhân viên tại <a href="/employees">Danh sách nhân viên</a>.</p>
+        </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-person-badge" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Chức vụ</h5>
+          </div>
+          <p>Quản lý phòng ban, chức vụ tại <a href="/positions">Quản lý chức vụ</a>.</p>
+        </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-file-earmark-text" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Hợp đồng</h5>
+          </div>
+          <p>Theo dõi hợp đồng lao động tại <a href="/contracts">Quản lý hợp đồng</a>.</p>
+        </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-wallet2" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Phụ cấp</h5>
+          </div>
+          <p>Điều chỉnh phụ cấp nhân viên tại <a href="/allowances">Quản lý phụ cấp</a>.</p>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4 col-xl-4">
+          <div class="d-flex align-items-center mb-3 mb-md-4">
+            <i class="app-menu__icon bi bi-card-list" style="font-size: 32px;"></i>
+            <h5 class="fw-bold ms-4 mb-0">Nghỉ phép</h5>
+          </div>
+          <p>Theo dõi yêu cầu nghỉ phép tại <a href="/leave-records">Quản lý nghỉ phép</a>.</p>
         </div>
       </div>
-    </main>
+    </div>
+  </section>
+</main>
